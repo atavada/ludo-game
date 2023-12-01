@@ -11,9 +11,9 @@ import  pygame.sysfont
 pygame.init()
 ###main screen##
 size = width, height = 800, 600
-bgimage = pygame.image.load('resources\main.png')
+bgimage = pygame.image.load('resources/bg.jpg')
 screen = pygame.display.set_mode(size)
-pygame.display.set_caption('Crap')
+pygame.display.set_caption('LUDO GAME')
 ###
 
 ###button colors##
@@ -116,8 +116,8 @@ def Throw():
 ###
 
 ###button object###
-newbtn = buttons.Buttons(250, 300, 100, 50, screen, acolor, pcolor, 'New Game', 16, newgame)
-exitbtn = buttons.Buttons(250, 400, 100, 50, screen, acolor, pcolor, 'Exit', 16, exit)
+newbtn = buttons.Buttons(350, 250, 100, 50, screen, agreen, pgreen, 'New Game', 16, newgame)
+exitbtn = buttons.Buttons(350, 330, 100, 50, screen, ared, pred, 'Exit', 16, exit)
 quitbtn = buttons.Buttons(400, 10, 100, 30, screen, acolor, pcolor, 'Quit Game', 14, quitgame)
 quitbtn1 = buttons.Buttons(350, 450, 100, 50, screen, acolor, pcolor, 'Quit Game', 14, quitgame)
 dicebtn = buttons.Buttons(100, 10, 100, 30, screen, acolor, pcolor, 'Throw Dice', 14, Throw)
