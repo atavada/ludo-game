@@ -50,6 +50,8 @@ pcble= [buttons.Buttons(600, 50, 100, 50, screen, ablue, pblue, 'Token 1',14,fun
             buttons.Buttons(600, 250, 100, 50, screen, ablue, pblue, 'Token 3',14,function=None),
             buttons.Buttons(600, 350, 100, 50, screen, ablue, pblue, 'Token 4',14,function=None)]
 
+# pcskip= buttons.Buttons(600, 50, 100, 50, screen, acolor, pcolor, 'skip moves',14,function=None)
+
 diceimg = {1: pygame.image.load('resources\dice1.png'),
                  2: pygame.image.load('resources\dice2.png'),
                  3: pygame.image.load('resources\dice3.png'),
@@ -78,7 +80,7 @@ position = {
     3: [-1, -1, -1, -1]
 }
 playerturn = 0
-firstdraw = [ True, True, True, True,]
+firstdraw = [ True, True, True, True]
 tokenclick  = True
 diceclick = False
 ###
@@ -105,12 +107,13 @@ def quitgame():
     playerturn = 0
     tokenclick = True
     diceclick = False
-    firstdraw = [True, True, True, True, ]
+    firstdraw = [True, True, True, True]
 
 def Throw():
     global draw, tokenclick, diceclick
     if tokenclick == True:
-        draw = random.randint(1, 6)
+        # draw = random.randint(1, 6)
+        draw = random.randint(5, 6)
         tokenclick = False
         diceclick = True
 ###
@@ -174,21 +177,42 @@ def pcd(player):
         screen.blit(displayfont, disrect)
 
 def PlayerTokenSelect(player):
+    global playerturn, draw
     if player == 0:
-        for i in range(4):
-            pcgrn[i].Draw()
+        if draw == 6:
+            for i in range(4):
+                pcgrn[i].Draw()
+        else:
+            for i in range(4):
+                if position[player][i] != -1:
+                    pcgrn[i].Draw()
         pcd(player)
     if player == 1:
-        for i in range(4):
-            pcylw[i].Draw()
+        if draw == 6:
+            for i in range(4):
+                pcylw[i].Draw()
+        else:
+            for i in range(4):
+                if position[player][i] != -1:
+                    pcylw[i].Draw()
         pcd(player)
     if player == 2:
-        for i in range(4):
-            pcble[i].Draw()
+        if draw == 6:
+            for i in range(4):
+                pcble[i].Draw()
+        else:
+            for i in range(4):
+                if position[player][i] != -1:
+                    pcble[i].Draw()
         pcd(player)
     if player == 3:
-        for i in range(4):
-            pcrd[i].Draw()
+        if draw == 6:
+            for i in range(4):
+                pcrd[i].Draw()
+        else:
+            for i in range(4):
+                if position[player][i] != -1:
+                    pcrd[i].Draw()
         pcd(player)
 
 def CollisionChecker(pt, token):
@@ -231,7 +255,7 @@ def CollisionChecker(pt, token):
                     position[2][i] = -1
 
 def playerchoice():
-    global playerturn, diceclick, tokenclick,position,draw
+    global playerturn, diceclick, tokenclick, position, draw
     if diceclick == True:
         if playerturn == 4:
             playerturn = 0
@@ -241,9 +265,17 @@ def playerchoice():
                     if draw == 6:
                         position[playerturn][0] += 1
                         firstdraw[playerturn] = False
+                        diceclick = True
+                        playerturn = -1
+                    
                 elif position[playerturn][0] + draw < 57:
-                    position[playerturn][0] += draw
-                CollisionChecker(playerturn,0)
+                    if draw == 6:
+                        position[playerturn][0] += 6
+                        diceclick = True
+                        playerturn = -1
+                    else:
+                        position[playerturn][0] += draw
+                CollisionChecker(playerturn, 0)
                 diceclick = False
                 tokenclick = True
                 playerturn += 1
@@ -254,8 +286,16 @@ def playerchoice():
                     if draw == 6:
                         position[playerturn][1] += 1
                         firstdraw[playerturn] = False
+                        diceclick = True
+                        playerturn = 0
+                        
                 elif position[playerturn][1] + draw < 57:
-                    position[playerturn][1] += draw
+                    if draw == 6:
+                        position[playerturn][1] += 6
+                        diceclick = True
+                        playerturn = 0
+                    else:
+                        position[playerturn][1] += draw
                 CollisionChecker(playerturn, 1)
                 diceclick = False
                 tokenclick = True
@@ -267,8 +307,16 @@ def playerchoice():
                     if draw == 6:
                         position[playerturn][2] += 1
                         firstdraw[playerturn] = False
+                        diceclick = True
+                        playerturn = 1
+
                 elif position[playerturn][2] + draw < 57:
-                    position[playerturn][2] += draw
+                    if draw == 6:
+                        position[playerturn][2] += 6
+                        diceclick = True
+                        playerturn = 1
+                    else:
+                        position[playerturn][2] += draw
                 CollisionChecker(playerturn, 2)
                 diceclick = False
                 tokenclick = True
@@ -280,9 +328,17 @@ def playerchoice():
                     if draw == 6:
                         position[playerturn][3] += 1
                         firstdraw[playerturn] = False
+                        diceclick = True
+                        playerturn = 2
+
                 elif position[playerturn][3] + draw < 57:
-                    position[playerturn][3] += draw
-                CollisionChecker(playerturn, 2)
+                    if draw == 6:
+                        position[playerturn][3] += 6
+                        diceclick = True
+                        playerturn = 2
+                    else:
+                        position[playerturn][3] += draw
+                CollisionChecker(playerturn, 3)
                 diceclick = False
                 tokenclick = True
                 playerturn += 1
