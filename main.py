@@ -187,20 +187,36 @@ def quitgame():
 
 
 def Throw():
-    global draw, tokenclick, diceclick
+    clock = pygame.time.Clock()
+    global draw, tokenclick, diceclick    
+    frames = []
     if tokenclick == True:
         draw = random.randint(1, 6)
+        frames = [diceimg[i] for i in range(1, 7)]
         tokenclick = False
         diceclick = True
+    
+    size = 800, 600
+    screen = pygame.display.set_mode(size)
+    screen.fill((255, 255, 255)) 
 
-
+    for frame in frames:
+        window_width, window_height = pygame.display.get_surface().get_size()
+        frame_width, frame_height = frame.get_size()
+        center_x = (window_width - frame_width) // 2
+        center_y = (window_height - frame_height) // 2
+        screen.blit(frame, (center_x, center_y)) 
+        pygame.display.flip()
+        pygame.time.wait(500)
+    pygame.display.flip()
+    
+    clock.tick(2)
+    # time.sleep(3)
 ###
 
 ###button object###
-newbtn = buttons.Buttons(
-    250, 300, 100, 50, screen, acolor, pcolor, "New Game", 16, newgame
-)
-exitbtn = buttons.Buttons(250, 400, 100, 50, screen, acolor, pcolor, "Exit", 16, exit)
+newbtn = buttons.Buttons(350, 250, 100, 50, screen, agreen, pgreen, 'New Game', 16, newgame)
+exitbtn = buttons.Buttons(350, 330, 100, 50, screen, ared, pred, 'Exit', 16, exit)
 quitbtn = buttons.Buttons(
     400, 10, 100, 30, screen, acolor, pcolor, "Quit Game", 14, quitgame
 )
