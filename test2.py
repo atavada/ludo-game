@@ -1,21 +1,24 @@
 import pygame
 import sys
-import startgame
+from OpenGL.GL import *
+from OpenGL.GLU import *  # modul OpenGL.GLU digunakan untuk membuat perspektif
+from pygame.locals import *
 import buttons
+import startgame
 import random
 import player
 from pygame.mouse import get_pos as pos
 from coordinates import *
 import pygame.sysfont
 
-
+# set pygame screen
 pygame.init()
-###main screen##
-size = width, height = 800, 600
+pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
+pygame.display.init()
+info = pygame.display.Info()
 bgimage = pygame.image.load("resources/bg.jpg")
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Crap")
-###
+screen = pygame.Surface((info.current_w, info.current_h))
+
 
 ###button colors##
 pcolor = [46, 64, 83]
@@ -29,6 +32,59 @@ pblue = [52, 152, 219]
 ayellow = [244, 208, 63]
 pyellow = [241, 196, 15]
 ###
+
+# basic opengl configuration
+glViewport(0, 0, info.current_w, info.current_h)
+glDepthRange(0, 1)
+glMatrixMode(GL_PROJECTION)
+glMatrixMode(GL_MODELVIEW)
+glLoadIdentity()
+glShadeModel(GL_SMOOTH)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glDisable(GL_DEPTH_TEST)
+glDisable(GL_LIGHTING)
+glDepthFunc(GL_LEQUAL)
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+glEnable(GL_BLEND)
+
+###
+### Function to convert a PyGame Surface to an OpenGL Texture
+### Maybe it's not necessary to perform each of these operations
+### every time.
+###
+texID = glGenTextures(1)
+# create pygame clock
+clock = pygame.time.Clock()
+text_font = pygame.font.Font(None, 30)  # some default font
+
+
+done = False
+
+
+def surfaceToTexture(pygame_surface):
+    global texID
+    rgb_surface = pygame.image.tostring(pygame_surface, "RGB")
+    glBindTexture(GL_TEXTURE_2D, texID)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    surface_rect = pygame_surface.get_rect()
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGB,
+        surface_rect.width,
+        surface_rect.height,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        rgb_surface,
+    )
+    glGenerateMipmap(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, 0)
+
 
 ###Token buttons##
 pcrd = [
@@ -156,6 +212,7 @@ diceclick = False
 # 57 = win
 # 58 = home
 ###button function##
+
 
 def newgame():
     global sts
@@ -525,14 +582,17 @@ def showwin(ply):
 
 
 sex = 0
+while not done:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            done = True
 
-###Actual Loop
-while True:
-    pygame.display.flip()
+    # Do all the PyGame operations to the offscreen surface
     if sts == 0:
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
         exitbtn.Draw()
+
 
     if sts == 1:
         screen.fill((255, 255, 255))
@@ -564,7 +624,27 @@ while True:
             elif win() == True:
                 showwin(playerturn)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    # prepare to render the texture-mapped rectangle
+    glClear(GL_COLOR_BUFFER_BIT)
+    glLoadIdentity()
+    glDisable(GL_LIGHTING)
+    glEnable(GL_TEXTURE_2D)
+
+    # Draw texture-mapped rectangle
+    surfaceToTexture(screen)
+    glBindTexture(GL_TEXTURE_2D, texID)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0, 0)
+    glVertex2f(-1, 1)
+    glTexCoord2f(0, 1)
+    glVertex2f(-1, -1)
+    glTexCoord2f(1, 1)
+    glVertex2f(1, -1)
+    glTexCoord2f(1, 0)
+    glVertex2f(1, 1)
+    glEnd()
+    
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
