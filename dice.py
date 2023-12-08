@@ -5,6 +5,8 @@ from PIL import Image  # Updated import for Python 3
 import sys
 import random as r
 import time
+import time
+
 
 # string to identify when ESC is pressed
 ESCAPE = "\033"
@@ -12,11 +14,13 @@ RETURN = "\r"
 
 # ID of the GLUT window
 window = 0
-
+dice = 0
 # angle and rotation coordinates of the cube
 angulo = 0.0
 xrot = yrot = zrot = 5.0
 texCounter = 0
+start_time = 0
+spinning = False
 
 # cube vertices
 vertices = (
@@ -135,10 +139,19 @@ def ReSizeGLScene(width, height):
 
 # Draw objects in the environment
 def DrawGLScene():
-    global angulo, xrot, yrot, zrot, texCounter
+    global xrot, yrot, zrot, spinning, dice, start_time
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
+    # coords of the cube
+    coords = {
+        1: [176, 0, 0],
+        2: [0, 88, 0],
+        3: [0, 0, 0],
+        4: [0, 270, 0],
+        5: [88, 0, 0],
+        6: [270, 0, 0],
+    }
     glTranslatef(0.0, 0.0, -10)
     glRotatef(xrot, 1.0, 0.0, 0.0)
     glRotatef(yrot, 0.0, 1.0, 0.0)
@@ -156,24 +169,63 @@ def DrawGLScene():
 
     glutSwapBuffers()
 
-    xrot += 1.0
-    yrot += 1.0
-    zrot += 1.0
+    if spinning:
+        elapsed_time = time.time() - start_time
+
+        if elapsed_time < 1:
+            # Random rotation
+            xrot += 1
+            yrot += 1
+            zrot += 1
+        else:
+            # Use coords and number to determine the rotation
+            number = dice
+            if xrot < coords[number][0]:
+                xrot += 1
+            elif xrot > coords[number][0]:
+                xrot -= 1
+            elif yrot < coords[number][1]:
+                yrot += 1
+            elif yrot > coords[number][1]:
+                yrot -= 1
+            elif zrot < coords[number][2]:
+                zrot += 1
+            elif zrot > coords[number][2]:
+                zrot -= 1
+            print(xrot, yrot, zrot)
+            if (
+                xrot == coords[number][0]
+                and yrot == coords[number][1]
+                and zrot == coords[number][2]
+            ):
+                spinning = False
+                print("Dice stopped")
+
+    # else:
+    #     spinning = False
+
+    #     dice = 0
+    #     print("Dice stopped")
 
 
 # Manage pressed keys
-def keyPressed(*args):
-    global angulo, xrot, yrot, zrot
+def keyPressed(key, x, y):
+    global angulo, xrot, yrot, zrot, spinning, dice, start_time
     global window
 
     # ESCAPE
-    if args[0] == ESCAPE:
+    if key == b"\033":
+        glutDestroyWindow(window)
         sys.exit()
-    if args[0] == RETURN:
+    if key == b"\r":
         print("Launching process to be implemented")
+        spinning = True
+        dice = r.randint(1, 6)
+        print("Dice: ", dice)
+        start_time = time.time()
 
 
-def main(*args):
+def start(*args):
     global window, image
 
     # check command-line arguments
@@ -208,4 +260,4 @@ def main(*args):
 
 
 if __name__ == "__main__":
-    main()
+    start()

@@ -10,6 +10,7 @@ import player
 from pygame.mouse import get_pos as pos
 from coordinates import *
 import pygame.sysfont
+from dice import *
 
 # set pygame screen
 pygame.init()
@@ -643,7 +644,22 @@ while not done:
     glTexCoord2f(1, 0)
     glVertex2f(1, 1)
     glEnd()
-    
+
+    # create rect inthe middle of the screen using opengl 0.
+    glDisable(GL_TEXTURE_2D)
+    glLoadIdentity()
+    glLineWidth(1)
+    glColor3f(1, 1, 1)
+    glBegin(GL_QUADS)
+    glVertex2f(-0.1, 0.1)
+    glVertex2f(-0.1, -0.1)
+    glVertex2f(0.1, -0.1)
+    glVertex2f(0.1, 0.1)
+    glEnd()
+
+    # show the 3d dice
+    # start()
+
     pygame.display.flip()
     clock.tick(60)
 
