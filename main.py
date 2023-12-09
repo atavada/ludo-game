@@ -209,6 +209,17 @@ diceclick = False
 def newgame():
     global sts
     sts = 1
+        # stop soundtrack
+    pygame.mixer.music.stop()
+    # play new soundtrack
+    music_list = [
+        "resources/audio/ingame_1.mp3",
+        "resources/audio/ingame_2.mp3",
+    ]
+    pygame.mixer.music.load(random.choice(music_list))
+    # decrase volume
+    pygame.mixer.music.set_volume(0.6)
+    pygame.mixer.music.play()
 
 
 def exit():
@@ -454,6 +465,15 @@ def quitgame():
         True,
         True,
     ]
+    pygame.mixer.music.stop()
+    soundtracklist = [
+        "resources/audio/soundtrack1.mp3",
+        "resources/audio/soundtrack2.mp3",
+    ]
+    load = random.choice(soundtracklist)
+    pygame.mixer.music.load(load)
+    pygame.mixer.music.set_volume(1)
+    pygame.mixer.music.play(-1)
 
 
 def Throw():
@@ -462,7 +482,8 @@ def Throw():
         draw = random.randint(1, 6)
         tokenclick = False
         diceclick = True
-        print(spinning)
+        dice_sound = pygame.mixer.Sound("resources/audio/dice.mp3")
+        dice_sound.play()
         start(draw)
         CleanupGL()
 
@@ -846,8 +867,12 @@ def splashscreen(screen):
 
 
 sex = 0
-# play soundtrack
-music = pygame.mixer.music.load("resources/audio/soundtrack menu.mp3")
+soundtracklist = [
+    "resources/audio/soundtrack1.mp3",
+    "resources/audio/soundtrack2.mp3",
+]
+load = random.choice(soundtracklist)
+pygame.mixer.music.load(load)
 # play
 pygame.mixer.music.play(-1)
 
@@ -859,6 +884,7 @@ random_tips = [
     "Jangan Lupa Tidur!",
     "Furi indonesia! Solid Solid Solid",
     "YNTKTS",
+    "Minimal Maksimal",
 ]
         
 tips = random.choice(random_tips)
@@ -906,6 +932,8 @@ while not done:
 
         if loading < 0.4:
             loading += 0.01
+        elif loading < 0.8:
+            loading += 0.005
         else:
             loading += 0.001
         # draw fake loading bar
@@ -920,6 +948,10 @@ while not done:
             pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(200, 500, 400, 20))
 
     if sts == 0:
+        # if audio not playing, play
+        if pygame.mixer.music.get_busy() == False:
+            pygame.mixer.music.play(-1)
+            
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
         rules_btn.Draw()
@@ -927,8 +959,6 @@ while not done:
         exitbtn.Draw()
 
     if sts == 1:
-        # stop soundtrack
-        pygame.mixer.music.stop()
         screen.fill((255, 255, 255))
         newgame = startgame.board(screen)
         newgame.createboard()

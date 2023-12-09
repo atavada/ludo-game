@@ -205,17 +205,17 @@ def DrawGLScene(dice):
             # Use coords and number to determine the rotation
             number = dice
             if xrot < coords[number][0]:
-                xrot += 0.5
+                xrot += 1
             elif xrot > coords[number][0]:
-                xrot -= 0.5
+                xrot -= 1
             if yrot < coords[number][1]:
-                yrot += 0.5
+                yrot += 1
             elif yrot > coords[number][1]:
-                yrot -= 0.5
+                yrot -= 1
             if zrot < coords[number][2]:
-                zrot += 0.5
+                zrot += 1
             elif zrot > coords[number][2]:
-                zrot -= 0.5
+                zrot -= 1
             if (
                 xrot == coords[number][0]
                 and yrot == coords[number][1]
