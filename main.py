@@ -221,6 +221,9 @@ def back_function():
     sts = 0
     # back to openGL display
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
+    # refresh screen
+    screen = pygame.Surface((info.current_w, info.current_h))
+
 
 
 def rules_function():
@@ -231,6 +234,8 @@ def rules_function():
     title_rect = title_text.get_rect(center=(400, 40))
 
     rule_text = [
+        "Peraturan Permainan LUDOang",
+        "",
         "Persiapan Permainan:",
         "- Papan permainan Ludo memiliki jalur yang terbagi menjadi empat warna: merah, kuning, hijau, dan biru.",
         "- Setiap pemain memiliki empat buah pion dalam warna yang sesuai.",
@@ -266,7 +271,7 @@ def rules_function():
     fontobj = pygame.font.Font("freesansbold.ttf", 20)
     max_width = 700  # Set the maximum width for text
     line_height = 25
-    y_position = 100
+    y_position = 50
     scroll_speed = 10  # Set the scroll speed
 
     scroll_y = 0
@@ -288,28 +293,44 @@ def rules_function():
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                waiting = False
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4:  # Mouse wheel scroll up
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
                     scroll_y += scroll_speed
-                elif event.button == 5:  # Mouse wheel scroll down
+                elif event.key == pygame.K_DOWN:
+                    scroll_y -= scroll_speed
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 5:  # Mouse wheel scroll up
+                    scroll_y += scroll_speed
+                elif event.button == 4:  # Mouse wheel scroll down
                     scroll_y -= scroll_speed
                 elif back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
                     waiting = False
 
         # Draw the title "Peraturan Permainan Ludo" with scrolling
-        r_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+        r_screen.fill((255, 255, 255))
 
         for line in rule_text:
-            display_font = fontobj.render(line, True, (0, 0, 0))
-            display_rect = display_font.get_rect(topleft=(50, y_position))
-            r_screen.blit(display_font, display_rect)
-            y_position += line_height
+            words = line.split(' ')
+            lines = ['']
+            current_line = 0
+
+            for word in words:
+                if fontobj.size(lines[current_line] + word)[0] <= max_width:
+                    lines[current_line] += word + ' '
+                else:
+                    current_line += 1
+                    lines.append(word + ' ')
+
+            for formatted_line in lines:
+                display_font = fontobj.render(formatted_line.rstrip(), True, [0, 0, 0])
+                display_rect = display_font.get_rect(topleft=(50, y_position))
+                r_screen.blit(display_font, display_rect)
+                y_position += line_height
 
         # Adjust y_position based on scrolling
-        y_position = 100 - scroll_y
+        y_position = 50 - scroll_y
 
         back_btn_rules.Draw()
 
@@ -367,7 +388,7 @@ def about_function():
         back_function,
     )
 
-    description_text = "LudoPy adalah game ludo digital yang dibuat dengan menggunakan bahasa pemrograman python yang didukung oleh open gl, dan py game. Terinspirasi dari ludo konvensional, LudoPy dikembangkan agar menjadi lebih interaktif dan menarik. Berbeda dengan game ludo pada umumnya, LudoPy memiliki fitur unik yaitu random zone dimana ketika pion berada dalam petak atau zone tersebut, maka pion akan berpindah tempat secara acak."
+    description_text = "LUDOang adalah game ludo digital yang dibuat dengan menggunakan bahasa pemrograman python yang didukung oleh open gl, dan py game. Terinspirasi dari ludo konvensional, LUDOang dikembangkan agar menjadi lebih interaktif dan menarik. Berbeda dengan game ludo pada umumnya, LUDOang memiliki fitur unik yaitu random zone dimana ketika pion berada dalam petak atau zone tersebut, maka pion akan berpindah tempat secara acak."
 
     lorem_font = pygame.font.Font("freesansbold.ttf", 16)
     description_lines = textwrap.wrap(description_text, width=85)
