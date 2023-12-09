@@ -23,7 +23,7 @@ pygame.display.init()
 info = pygame.display.Info()
 bgimage = pygame.image.load("resources/bg.jpg")
 screen = pygame.Surface((info.current_w, info.current_h))
-pygame.display.set_caption("Ludo - Kelompok 3")
+pygame.display.set_caption("LUDOang")
 # center the screen
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 
