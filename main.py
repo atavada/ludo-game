@@ -88,7 +88,7 @@ def surfaceToTexture(pygame_surface):
 
 # pion buttons
 pcrd = [
-    buttons.Buttons(600, 50, 100, 50, screen, ared, pred, "Token 1", 14, function=None),
+    buttons.Buttons(600, 50, 100, 50, screen, ared, pred, "Pion 1", 14, function=None),
     buttons.Buttons(600, 150, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
     buttons.Buttons(600, 250, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
     buttons.Buttons(600, 350, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
