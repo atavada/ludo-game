@@ -119,6 +119,14 @@ def InitGL(width, height):
     glEnable(GL_DEPTH_TEST)
     # enable Smooth Color Shading
     glShadeModel(GL_SMOOTH)
+    # add lighting
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glLightfv(GL_LIGHT0, GL_POSITION, (0, 0, 1, 0))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, (0.5, 0.5, 0.5, 1))
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, (1.0, 1.0, 1.0, 1))
+
+    
 
     # Perspective calculations
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)

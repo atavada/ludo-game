@@ -89,9 +89,11 @@ def surfaceToTexture(pygame_surface):
 # pion buttons
 pcrd = [
     buttons.Buttons(600, 50, 100, 50, screen, ared, pred, "Pion 1", 14, function=None),
-    buttons.Buttons(600, 150, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
-    buttons.Buttons(600, 250, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
-    buttons.Buttons(600, 350, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
+    buttons.Buttons(600, 110, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
+    buttons.Buttons(600, 170, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
+    buttons.Buttons(600, 230, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
+    # skip button
+    buttons.Buttons(600, 290, 100, 50, screen, ared, pred, "Skip", 14, function=None),
 ]
 
 pcgrn = [
@@ -99,13 +101,17 @@ pcgrn = [
         600, 50, 100, 50, screen, agreen, pgreen, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, agreen, pgreen, "Pion 2", 14, function=None
+        600, 110, 100, 50, screen, agreen, pgreen, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, agreen, pgreen, "Pion 3", 14, function=None
+        600, 170, 100, 50, screen, agreen, pgreen, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, agreen, pgreen, "Pion 4", 14, function=None
+        600, 230, 100, 50, screen, agreen, pgreen, "Pion 4", 14, function=None
+    ),
+    #  skip button
+    buttons.Buttons(
+        600, 290, 100, 50, screen, agreen, pgreen, "Skip", 14, function=None
     ),
 ]
 
@@ -114,13 +120,17 @@ pcylw = [
         600, 50, 100, 50, screen, ayellow, pyellow, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, ayellow, pyellow, "Pion 2", 14, function=None
+        600, 110, 100, 50, screen, ayellow, pyellow, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, ayellow, pyellow, "Pion 3", 14, function=None
+        600, 170, 100, 50, screen, ayellow, pyellow, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, ayellow, pyellow, "Pion 4", 14, function=None
+        600, 230, 100, 50, screen, ayellow, pyellow, "Pion 4", 14, function=None
+    ),
+    #  skip button
+    buttons.Buttons(
+        600, 290, 100, 50, screen, ayellow, pyellow, "Skip", 14, function=None
     ),
 ]
 
@@ -129,14 +139,16 @@ pcble = [
         600, 50, 100, 50, screen, ablue, pblue, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, ablue, pblue, "Pion 2", 14, function=None
+        600, 110, 100, 50, screen, ablue, pblue, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, ablue, pblue, "Pion 3", 14, function=None
+        600, 170, 100, 50, screen, ablue, pblue, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, ablue, pblue, "Pion 4", 14, function=None
+        600, 230, 100, 50, screen, ablue, pblue, "Pion 4", 14, function=None
     ),
+    #  skip button
+    buttons.Buttons(600, 290, 100, 50, screen, ablue, pblue, "Skip", 14, function=None),
 ]
 
 diceimg = {
@@ -209,7 +221,7 @@ diceclick = False
 def newgame():
     global sts
     sts = 1
-        # stop soundtrack
+    # stop soundtrack
     pygame.mixer.music.stop()
     # play new soundtrack
     music_list = [
@@ -233,7 +245,6 @@ def back_function():
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
     # refresh screen
     screen = pygame.Surface((info.current_w, info.current_h))
-
 
 
 def rules_function():
@@ -322,16 +333,16 @@ def rules_function():
         r_screen.fill((255, 255, 255))
 
         for line in rule_text:
-            words = line.split(' ')
-            lines = ['']
+            words = line.split(" ")
+            lines = [""]
             current_line = 0
 
             for word in words:
                 if fontobj.size(lines[current_line] + word)[0] <= max_width:
-                    lines[current_line] += word + ' '
+                    lines[current_line] += word + " "
                 else:
                     current_line += 1
-                    lines.append(word + ' ')
+                    lines.append(word + " ")
 
             for formatted_line in lines:
                 display_font = fontobj.render(formatted_line.rstrip(), True, [0, 0, 0])
@@ -514,7 +525,7 @@ newbtn = buttons.Buttons(
     350, 250, 100, 50, screen, agreen, pgreen, "New Game", 16, newgame
 )
 rules_btn = buttons.Buttons(
-    350, 330, 100, 50, screen, acolor, pcolor, "Rules", 16, rules_function
+    350, 330, 100, 50, screen, ayellow, pyellow, "Rules", 16, rules_function
 )
 about_btn = buttons.Buttons(
     350, 410, 100, 50, screen, ablue, pblue, "About", 16, about_function
@@ -595,39 +606,43 @@ def PlayerTokenSelect(player):
     global draw, firstdraw, playerturn
     if player == 0:
         if draw == 6 or firstdraw[player] == True:
-            for i in range(4):
+            for i in range(5):
                 pcgrn[i].Draw()
         else:
-            for i in range(4):
-                if position[player][i] != -1:
-                    pcgrn[i].Draw()
+            for i in range(5):
+                if i < 4:
+                    if position[player][i] != -1:
+                        pcgrn[i].Draw()
         pcd(player)
     if player == 1:
         if draw == 6 or firstdraw[player] == True:
-            for i in range(4):
+            for i in range(5):
                 pcylw[i].Draw()
         else:
-            for i in range(4):
-                if position[player][i] != -1:
-                    pcylw[i].Draw()
+            for i in range(5):
+                if i < 4:
+                    if position[player][i] != -1:
+                        pcylw[i].Draw()
         pcd(player)
     if player == 2:
         if draw == 6 or firstdraw[player] == True:
-            for i in range(4):
+            for i in range(5):
                 pcble[i].Draw()
         else:
-            for i in range(4):
-                if position[player][i] != -1:
-                    pcble[i].Draw()
+            for i in range(5):
+                if i < 4:
+                    if position[player][i] != -1:
+                        pcble[i].Draw()
         pcd(player)
     if player == 3:
         if draw == 6 or firstdraw[player] == True:
-            for i in range(4):
+            for i in range(5):
                 pcrd[i].Draw()
         else:
-            for i in range(4):
-                if position[player][i] != -1:
-                    pcrd[i].Draw()
+            for i in range(5):
+                if i < 4:
+                    if position[player][i] != -1:
+                        pcrd[i].Draw()
         pcd(player)
 
 
@@ -752,6 +767,7 @@ def playerchoice():
 
                 elif position[playerturn][0] == -1 and draw == 6:
                     position[playerturn][0] += 1
+
                 randomZone(playerturn, 0)
                 CollisionChecker(playerturn, 0)
                 diceclick = False
@@ -759,7 +775,7 @@ def playerchoice():
                 if draw != 6:
                     playerturn += 1
 
-        elif 700 >= pos()[0] >= 600 and 200 >= pos()[1] >= 150:
+        elif 700 >= pos()[0] >= 600 and 170 >= pos()[1] >= 110:
             if pygame.mouse.get_pressed()[0] == 1:
                 if firstdraw[playerturn] == True:
                     if draw == 6:
@@ -779,7 +795,7 @@ def playerchoice():
                 if draw != 6:
                     playerturn += 1
 
-        elif 700 >= pos()[0] >= 600 and 300 >= pos()[1] >= 250:
+        elif 700 >= pos()[0] >= 600 and 230 >= pos()[1] >= 170:
             if pygame.mouse.get_pressed()[0] == 1:
                 if firstdraw[playerturn] == True:
                     if draw == 6:
@@ -799,7 +815,7 @@ def playerchoice():
                 if draw != 6:
                     playerturn += 1
 
-        elif 700 >= pos()[0] >= 600 and 400 >= pos()[1] >= 350:
+        elif 700 >= pos()[0] >= 600 and 290 >= pos()[1] >= 230:
             if pygame.mouse.get_pressed()[0] == 1:
                 if firstdraw[playerturn] == True:
                     if draw == 6:
@@ -814,6 +830,14 @@ def playerchoice():
                     position[playerturn][3] += 1
                 randomZone(playerturn, 3)
                 CollisionChecker(playerturn, 3)
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+        # skip button to skip turn
+        elif 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
+            print("skip")
+            if pygame.mouse.get_pressed()[0] == 1:
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -853,33 +877,43 @@ def win():
 
 
 def showwin(ply):
+    global screen
     fontobj = pygame.font.Font("freesansbold.ttf", 35)
     screen.fill((255, 255, 255))
     if ply == 4:
         ply = 0
     if ply == 0:
+        screen.fill((0, 255, 0))
         displayfont = fontobj.render("player green won", True, [0, 0, 0])
         disrect = displayfont.get_rect()
         disrect.center = (400, 300)
         screen.blit(displayfont, disrect)
+        # set color screen to green
 
     elif ply == 1:
+        screen.fill((255, 255, 0))
         displayfont = fontobj.render("Player Yellow won", True, [0, 0, 0])
         disrect = displayfont.get_rect()
         disrect.center = (400, 300)
         screen.blit(displayfont, disrect)
+        # set color screen to yellow
 
     elif ply == 2:
+        screen.fill((0, 0, 255))
         displayfont = fontobj.render("Player Blue won", True, [0, 0, 0])
         disrect = displayfont.get_rect()
         disrect.center = (400, 300)
         screen.blit(displayfont, disrect)
+        #  set color screen to blue
 
     elif ply == 3:
+        screen.fill((255, 0, 0))
         displayfont = fontobj.render("Player Red won", True, [0, 0, 0])
         disrect = displayfont.get_rect()
         disrect.center = (400, 300)
         screen.blit(displayfont, disrect)
+        # set color screen to red
+
     quitbtn1.Draw()
 
 
@@ -887,7 +921,6 @@ def splashscreen(screen):
     global sts
 
 
-sex = 0
 soundtracklist = [
     "resources/audio/soundtrack1.mp3",
     "resources/audio/soundtrack2.mp3",
@@ -907,7 +940,7 @@ random_tips = [
     "YNTKTS",
     "Minimal Maksimal",
 ]
-        
+
 tips = random.choice(random_tips)
 
 while not done:
@@ -924,13 +957,19 @@ while not done:
         if loading > 1:
             # Add message "Tap to continue" with outline
             fontobj = pygame.font.Font("freesansbold.ttf", 18)
-            displayfont_outline = fontobj.render("Tap to continue", True, [0, 0, 0])  # Outline color
-            displayfont = fontobj.render("Tap to continue", True, [255, 255, 255])  # Text color
+            displayfont_outline = fontobj.render(
+                "Tap to continue", True, [0, 0, 0]
+            )  # Outline color
+            displayfont = fontobj.render(
+                "Tap to continue", True, [255, 255, 255]
+            )  # Text color
 
             # Render the outline text
             disrect_outline = displayfont_outline.get_rect()
             disrect_outline.center = (400, 350)
-            screen.blit(displayfont_outline, disrect_outline.move(2, 2))  # Offset the outline text slightly
+            screen.blit(
+                displayfont_outline, disrect_outline.move(2, 2)
+            )  # Offset the outline text slightly
 
             # Render the main text
             disrect = displayfont.get_rect()
@@ -943,7 +982,9 @@ while not done:
         displayfont_outline = fontobj.render(tips, True, (0, 0, 0))  # Outline color
         disrect_outline = displayfont_outline.get_rect()
         disrect_outline.center = (400, 540)
-        screen.blit(displayfont_outline, disrect_outline.move(2, 2))  # Offset the outline text slightly
+        screen.blit(
+            displayfont_outline, disrect_outline.move(2, 2)
+        )  # Offset the outline text slightly
 
         # Render the main text
         displayfont = fontobj.render(tips, True, (255, 255, 255))  # Text color
@@ -972,7 +1013,7 @@ while not done:
         # if audio not playing, play
         if pygame.mixer.music.get_busy() == False:
             pygame.mixer.music.play(-1)
-            
+
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
         rules_btn.Draw()
@@ -986,20 +1027,11 @@ while not done:
         quitbtn.Draw()
         dicebtn.Draw()
         if draw == 0:
-            if sex == 57:
-                sex = 0
-            Player[0][1].draw(GreenPath[sex][0], GreenPath[sex][1])
-            Player[1][1].draw(YellowPath[sex][0], YellowPath[sex][1])
-            Player[2][1].draw(BluePath[sex][0], BluePath[sex][1])
-            Player[3][1].draw(RedPath[sex][0], RedPath[sex][1])
-
-            sex += 1
             for i in range(4):
                 Player[0][i].draw(greenorigin[i][0], greenorigin[i][1])
                 Player[1][i].draw(yelloworigin[i][0], yelloworigin[i][1])
                 Player[2][i].draw(blueorigin[i][0], blueorigin[i][1])
                 Player[3][i].draw(redorigin[i][0], redorigin[i][1])
-
         else:
             if win() == False:
                 screen.blit(diceimg[draw], (275, 0))
