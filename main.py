@@ -12,7 +12,7 @@ from coordinates import *
 import pygame.sysfont
 import os
 import textwrap
-from dice import *
+from dice import start, CleanupGL
 import asyncio
 
 
@@ -836,7 +836,6 @@ def playerchoice():
                     playerturn += 1
         # skip button to skip turn
         elif 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
-            print("skip")
             if pygame.mouse.get_pressed()[0] == 1:
                 diceclick = False
                 tokenclick = True
@@ -877,6 +876,9 @@ def win():
 
 
 def showwin(ply):
+    ply -= 1
+    if ply == -1:
+        ply = 3
     global screen
     fontobj = pygame.font.Font("freesansbold.ttf", 35)
     screen.fill((255, 255, 255))
@@ -942,7 +944,6 @@ random_tips = [
 ]
 
 tips = random.choice(random_tips)
-
 while not done:
     for event in pygame.event.get():
         if event.type == QUIT:
