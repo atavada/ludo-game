@@ -217,9 +217,8 @@ def exit():
 
 
 def back_function():
-    global sts, info
+    global sts
     sts = 0
-    # back to openGL display
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
     # refresh screen
     screen = pygame.Surface((info.current_w, info.current_h))
@@ -862,31 +861,85 @@ def showwin(ply):
         screen.blit(displayfont, disrect)
     quitbtn1.Draw()
 
+
 def splashscreen(screen):
     global sts
+
 
 sex = 0
 # play soundtrack
 music = pygame.mixer.music.load("resources/audio/soundtrack menu.mp3")
 # play
-pygame.mixer.music.play(-1) 
+pygame.mixer.music.play(-1)
+
+loading = 0
+random_tips = [
+    "We Also Create Mini Harbor Game!",
+    "Jangan Lupa Bernafas!",
+    "Jangan Lupa Makan!",
+    "Jangan Lupa Tidur!",
+    "Furi indonesia! Solid Solid Solid",
+    "YNTKTS",
+]
+        
+tips = random.choice(random_tips)
+
 while not done:
     for event in pygame.event.get():
         if event.type == QUIT:
             done = True
+        # if mouse click up
+        if event.type == pygame.MOUSEBUTTONUP and sts == -1 and loading > 1:
+            sts = 0
 
     if sts == -1:
         splash = pygame.image.load("resources/bg.jpg")
         screen.blit(splash, (0, 0))
-        # add message tap to continue
+        if loading > 1:
+            # Add message "Tap to continue" with outline
+            fontobj = pygame.font.Font("freesansbold.ttf", 18)
+            displayfont_outline = fontobj.render("Tap to continue", True, [0, 0, 0])  # Outline color
+            displayfont = fontobj.render("Tap to continue", True, [255, 255, 255])  # Text color
+
+            # Render the outline text
+            disrect_outline = displayfont_outline.get_rect()
+            disrect_outline.center = (400, 350)
+            screen.blit(displayfont_outline, disrect_outline.move(2, 2))  # Offset the outline text slightly
+
+            # Render the main text
+            disrect = displayfont.get_rect()
+            disrect.center = (400, 350)
+            screen.blit(displayfont, disrect)
+
         fontobj = pygame.font.Font("freesansbold.ttf", 18)
-        displayfont = fontobj.render("Tap to continue", True, [0, 0, 0])
+
+        # Render the outline text
+        displayfont_outline = fontobj.render(tips, True, (0, 0, 0))  # Outline color
+        disrect_outline = displayfont_outline.get_rect()
+        disrect_outline.center = (400, 540)
+        screen.blit(displayfont_outline, disrect_outline.move(2, 2))  # Offset the outline text slightly
+
+        # Render the main text
+        displayfont = fontobj.render(tips, True, (255, 255, 255))  # Text color
         disrect = displayfont.get_rect()
-        disrect.center = (400, 550)
+        disrect.center = (400, 540)
         screen.blit(displayfont, disrect)
-        # if click on splash screen, go to main menu
-        if pygame.mouse.get_pressed()[0] == 1:
-            sts = 0
+
+        if loading < 0.4:
+            loading += 0.01
+        else:
+            loading += 0.001
+        # draw fake loading bar
+        pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(200, 500, 400, 20))
+        pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(200, 500, 400, 20), 2)
+
+        if loading < 1:
+            pygame.draw.rect(
+                screen, (255, 255, 255), pygame.Rect(200, 500, 400 * loading, 20)
+            )
+        else:
+            pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(200, 500, 400, 20))
+
     if sts == 0:
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
