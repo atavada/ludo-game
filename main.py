@@ -217,17 +217,15 @@ def exit():
 
 
 def back_function():
-    global sts
+    global sts, info
     sts = 0
+    # back to openGL display
+    pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
 
 
 def rules_function():
-    pygame.init()
-
-    rules_screen = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("LUDO GAME")
-    rules_screen.fill((255, 255, 255))
-
+    r_screen = pygame.display.set_mode((800, 600))
+    r_screen.fill((255, 255, 255))
     title_font = pygame.font.Font("freesansbold.ttf", 32)
     title_text = title_font.render("Peraturan Permainan Ludo", True, [0, 0, 0])
     title_rect = title_text.get_rect(center=(400, 40))
@@ -278,7 +276,7 @@ def rules_function():
         550,
         100,
         50,
-        rules_screen,
+        r_screen,
         (255, 0, 0),
         (200, 0, 0),
         "Back",
@@ -290,36 +288,24 @@ def rules_function():
     while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                waiting = False
                 pygame.quit()
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    if scroll_y > -((len(rule_text) * line_height) - 550):
-                        scroll_y -= scroll_speed
-                elif event.key == pygame.K_DOWN:
-                    if scroll_y < 0:
-                        scroll_y += scroll_speed
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:  # Mouse wheel scroll up
-                    if scroll_y > -((len(rule_text) * line_height) - 550):
-                        scroll_y -= scroll_speed
+                    scroll_y += scroll_speed
                 elif event.button == 5:  # Mouse wheel scroll down
-                    if scroll_y < 0:
-                        scroll_y += scroll_speed
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
-                        waiting = False
-                        return
-
-        rules_screen.fill((255, 255, 255))
+                    scroll_y -= scroll_speed
+                elif back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
+                    waiting = False
 
         # Draw the title "Peraturan Permainan Ludo" with scrolling
-        rules_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+        r_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
 
         for line in rule_text:
             display_font = fontobj.render(line, True, (0, 0, 0))
             display_rect = display_font.get_rect(topleft=(50, y_position))
-            rules_screen.blit(display_font, display_rect)
+            r_screen.blit(display_font, display_rect)
             y_position += line_height
 
         # Adjust y_position based on scrolling
@@ -331,8 +317,6 @@ def rules_function():
 
 
 def about_function():
-    pygame.init()
-
     about_screen = pygame.display.set_mode((800, 600))
     pygame.display.set_caption("LUDO GAME")
 
@@ -666,8 +650,8 @@ def CollisionChecker(pt, token):
                     position[2][i] = -1
 
 
+# if player land in, randomize position
 def randomZone(pt, token):
-    # if player land in
     if pt == 0 and position[pt][token] != -1:
         if (
             position[pt][token] == 5
@@ -727,6 +711,7 @@ def playerchoice():
 
                 elif position[playerturn][0] == -1 and draw == 6:
                     position[playerturn][0] += 1
+                randomZone(playerturn, 0)
                 CollisionChecker(playerturn, 0)
                 diceclick = False
                 tokenclick = True
@@ -744,9 +729,9 @@ def playerchoice():
                     and position[playerturn][1] != -1
                 ):
                     position[playerturn][1] += draw
-                elif position[playerturn][0] == -1 and draw == 6:
-                    position[playerturn][0] += 1
-
+                elif position[playerturn][1] == -1 and draw == 6:
+                    position[playerturn][1] += 1
+                randomZone(playerturn, 1)
                 CollisionChecker(playerturn, 1)
                 diceclick = False
                 tokenclick = True
@@ -766,6 +751,7 @@ def playerchoice():
                     position[playerturn][2] += draw
                 elif position[playerturn][2] == -1 and draw == 6:
                     position[playerturn][2] += 1
+                randomZone(playerturn, 2)
                 CollisionChecker(playerturn, 2)
                 diceclick = False
                 tokenclick = True
@@ -785,7 +771,8 @@ def playerchoice():
                     position[playerturn][3] += draw
                 elif position[playerturn][3] == -1 and draw == 6:
                     position[playerturn][3] += 1
-                CollisionChecker(playerturn, 2)
+                randomZone(playerturn, 3)
+                CollisionChecker(playerturn, 3)
                 diceclick = False
                 tokenclick = True
                 if draw != 6:

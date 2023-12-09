@@ -12,7 +12,7 @@ class Buttons:
         self.pcolor = pcolor
         self.fontsize = fontsize
         self.func = function
-
+        self.click_sound = pygame.mixer.Sound('resources/audio/btn.mp3')
         # Tambahkan atribut rect
         self.rect = pygame.Rect(self.xcor, self.ycor, self.width, self.height)
 
@@ -21,6 +21,8 @@ class Buttons:
         if self.rect.collidepoint(mouse):
             pygame.draw.rect(self.surface, self.acolor, self.rect, border_radius=10)
             if self.func is not None and pygame.mouse.get_pressed()[0] == 1:
+                # play click sound
+                self.click_sound.play()
                 self.func()
         else:
             pygame.draw.rect(self.surface, self.pcolor, self.rect, border_radius=10)
