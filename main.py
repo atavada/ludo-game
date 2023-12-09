@@ -7,6 +7,8 @@ import player
 from pygame.mouse import get_pos as pos
 from coordinates import *
 import pygame.sysfont
+import os
+import textwrap
 
 pygame.init()
 ###main screen##
@@ -164,6 +166,314 @@ def exit():
     pygame.quit()
     sys.exit()
 
+# Tambahkan fungsi back_function untuk mengubah nilai sts menjadi 0
+# Tambahkan fungsi back_function untuk mengubah nilai sts menjadi 0
+def back_function():
+    global sts
+    sts = 0
+
+# Tambahkan fungsi back_function untuk mengubah nilai sts menjadi 0
+
+# Tambahkan fungsi untuk menampilkan halaman peraturan permainan
+# def rules_function():
+#     pygame.init()
+
+#     rules_screen = pygame.display.set_mode((800, 600))
+#     pygame.display.set_caption('LUDO GAME')
+#     rules_screen.fill((255, 255, 255))
+    
+
+#     rule_text = [
+#         "Peraturan Permainan Ludo",
+#         "",
+#         "Persiapan Permainan:",
+#         "- Papan permainan Ludo memiliki jalur yang terbagi menjadi empat warna: merah, kuning, hijau, dan biru.",
+#         "- Setiap pemain memiliki empat buah pion dalam warna yang sesuai.",
+#         "- Pions ditempatkan di rumah masing-masing pemain di ujung jalur.",
+#         "",
+#         "Tujuan Permainan:",
+#         "- Pemain pertama yang berhasil membawa keempat pionnya ke pusat papan permainan adalah pemenangnya.",
+#         "",
+#         "Aturan Pergeseran Pion:",
+#         "- Pion dapat bergerak sejauh jumlah mata dadu yang dilempar.",
+#         "- Jika dadu menunjukkan enam, pemain dapat melempar lagi dan bergerak pion baru atau memindahkan pion yang sudah bergerak.",
+#         "- Pion hanya dapat diakses oleh pemain yang memiliki warna yang sesuai dengan warna jalur yang diikuti.",
+#         "",
+#         "Aturan Keamanan (Safe Zone):",
+#         "- Kotak yang ditempati oleh pion sendiri adalah zona aman. Pion di zona aman tidak dapat dihentikan oleh pemain lain.",
+#         "- Pemain lain tidak dapat melewati zona aman pemain lainnya.",
+#         "",
+#         "Aturan Memakan Pion Pemain Lain:",
+#         "- Jika pion mendarat di kotak yang sudah ditempati oleh pion pemain lain, pion pemain lain tersebut dipindahkan kembali ke rumahnya.",
+#         "",
+#         "Aturan Masuk ke Pusat:",
+#         "- Untuk memasukkan pion ke pusat papan, pemain harus melempar dadu dan mendapatkan jumlah mata yang sesuai dengan jarak yang tersisa menuju pusat.",
+#         "- Pemain harus melempar jumlah mata yang pas untuk menyelesaikan perjalanan ke pusat.",
+#         "",
+#         "Aturan Dadu:",
+#         "- Dadu dilempar dengan menekan tombol 'Throw Dice'.",
+#         "- Jika dadu jatuh di luar papan atau tidak jelas, pemain harus melempar ulang.",
+#         "",
+#         "Pemenang:",
+#         "- Pemain yang pertama kali membawa keempat pionnya ke pusat papan adalah pemenangnya."
+#     ]
+
+#     fontobj = pygame.font.Font('freesansbold.ttf', 20)
+#     max_width = 700  # Set the maximum width for text
+#     line_height = 25
+#     y_position = 50
+#     scroll_speed = 10  # Set the scroll speed
+
+#     scroll_y = 0
+
+#     back_btn_rules = buttons.Buttons(350, 550, 100, 50, rules_screen, (255, 0, 0), (200, 0, 0), 'Back', 16, back_function)
+
+#     waiting = True
+#     while waiting:
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 pygame.quit()
+#                 sys.exit()
+#             elif event.type == pygame.KEYDOWN:
+#                 if event.key == pygame.K_UP:
+#                     scroll_y += scroll_speed
+#                 elif event.key == pygame.K_DOWN:
+#                     scroll_y -= scroll_speed
+#             elif event.type == pygame.MOUSEBUTTONDOWN:
+#                 if event.button == 4:  # Mouse wheel scroll up
+#                     scroll_y += scroll_speed
+#                 elif event.button == 5:  # Mouse wheel scroll down
+#                     scroll_y -= scroll_speed
+#                 elif event.type == pygame.MOUSEBUTTONDOWN:
+#                     if back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
+#                         waiting = False
+#                         return
+
+#         rules_screen.fill((255, 255, 255))
+
+#         for line in rule_text:
+#             words = line.split(' ')
+#             lines = ['']
+#             current_line = 0
+
+#             for word in words:
+#                 if fontobj.size(lines[current_line] + word)[0] <= max_width:
+#                     lines[current_line] += word + ' '
+#                 else:
+#                     current_line += 1
+#                     lines.append(word + ' ')
+
+#             for formatted_line in lines:
+#                 display_font = fontobj.render(formatted_line.rstrip(), True, [0, 0, 0])
+#                 display_rect = display_font.get_rect(topleft=(50, y_position))
+#                 rules_screen.blit(display_font, display_rect)
+#                 y_position += line_height
+
+#         # Adjust y_position based on scrolling
+#         y_position = 50 - scroll_y
+
+#         back_btn_rules.Draw()
+
+#         pygame.display.flip()
+
+
+def rules_function():
+    pygame.init()
+
+    rules_screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption('LUDO GAME')
+    rules_screen.fill((255, 255, 255))
+
+    title_font = pygame.font.Font('freesansbold.ttf', 32)
+    title_text = title_font.render("Peraturan Permainan Ludo", True, [0, 0, 0])
+    title_rect = title_text.get_rect(center=(400, 40))
+
+    rule_text = [
+        "Persiapan Permainan:",
+        "- Papan permainan Ludo memiliki jalur yang terbagi menjadi empat warna: merah, kuning, hijau, dan biru.",
+        "- Setiap pemain memiliki empat buah pion dalam warna yang sesuai.",
+        "- Pions ditempatkan di rumah masing-masing pemain di ujung jalur.",
+        "",
+        "Tujuan Permainan:",
+        "- Pemain pertama yang berhasil membawa keempat pionnya ke pusat papan permainan adalah pemenangnya.",
+        "",
+        "Aturan Pergeseran Pion:",
+        "- Pion dapat bergerak sejauh jumlah mata dadu yang dilempar.",
+        "- Jika dadu menunjukkan enam, pemain dapat melempar lagi dan bergerak pion baru atau memindahkan pion yang sudah bergerak.",
+        "- Pion hanya dapat diakses oleh pemain yang memiliki warna yang sesuai dengan warna jalur yang diikuti.",
+        "",
+        "Aturan Keamanan (Safe Zone):",
+        "- Kotak yang ditempati oleh pion sendiri adalah zona aman. Pion di zona aman tidak dapat dihentikan oleh pemain lain.",
+        "- Pemain lain tidak dapat melewati zona aman pemain lainnya.",
+        "",
+        "Aturan Memakan Pion Pemain Lain:",
+        "- Jika pion mendarat di kotak yang sudah ditempati oleh pion pemain lain, pion pemain lain tersebut dipindahkan kembali ke rumahnya.",
+        "",
+        "Aturan Masuk ke Pusat:",
+        "- Untuk memasukkan pion ke pusat papan, pemain harus melempar dadu dan mendapatkan jumlah mata yang sesuai dengan jarak yang tersisa menuju pusat.",
+        "- Pemain harus melempar jumlah mata yang pas untuk menyelesaikan perjalanan ke pusat.",
+        "",
+        "Aturan Dadu:",
+        "- Dadu dilempar dengan menekan tombol 'Throw Dice'.",
+        "- Jika dadu jatuh di luar papan atau tidak jelas, pemain harus melempar ulang.",
+        "",
+        "Pemenang:",
+        "- Pemain yang pertama kali membawa keempat pionnya ke pusat papan adalah pemenangnya."
+    ]
+
+    fontobj = pygame.font.Font('freesansbold.ttf', 20)
+    max_width = 700  # Set the maximum width for text
+    line_height = 25
+    y_position = 100
+    scroll_speed = 10  # Set the scroll speed
+
+    scroll_y = 0
+
+    back_btn_rules = buttons.Buttons(350, 550, 100, 50, rules_screen, (255, 0, 0), (200, 0, 0), 'Back', 16, back_function)
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    if scroll_y > -((len(rule_text) * line_height) - 550):
+                        scroll_y -= scroll_speed
+                elif event.key == pygame.K_DOWN:
+                    if scroll_y < 0:
+                        scroll_y += scroll_speed
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:  # Mouse wheel scroll up
+                    if scroll_y > -((len(rule_text) * line_height) - 550):
+                        scroll_y -= scroll_speed
+                elif event.button == 5:  # Mouse wheel scroll down
+                    if scroll_y < 0:
+                        scroll_y += scroll_speed
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
+                        waiting = False
+                        return
+
+        rules_screen.fill((255, 255, 255))
+
+        # Draw the title "Peraturan Permainan Ludo" with scrolling
+        rules_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+
+        for line in rule_text:
+            display_font = fontobj.render(line, True, (0, 0, 0))
+            display_rect = display_font.get_rect(topleft=(50, y_position))
+            rules_screen.blit(display_font, display_rect)
+            y_position += line_height
+
+        # Adjust y_position based on scrolling
+        y_position = 100 - scroll_y
+
+        back_btn_rules.Draw()
+
+        pygame.display.flip()
+
+
+
+def about_function():
+    pygame.init()
+
+    about_screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption('LUDO GAME')
+
+    title_font = pygame.font.Font('freesansbold.ttf', 32)
+    title_text = title_font.render("About Us", True, [0, 0, 0])
+    title_rect = title_text.get_rect(center=(400, 40))
+
+    developer_profiles = [
+        {"nama": "Alvalen Shafelbilyunazra", "nim": "220535608548", "photo": "Foto_Almet_Alvalen.png", "offering": "TI - A"},
+        {"nama": "Ardha A. P. Agustavada", "nim": "220535608503", "photo": "Foto_Almet_Ardha.png", "offering": "TI - A"},
+        {"nama": "Azarya A. K. Moeljono", "nim": "220535608951", "photo": "Azarya_Foto_Almet.png", "offering": "TI - A"},
+        # Tambahkan profil pengembang lainnya sesuai kebutuhan
+    ]
+
+    fontobj = pygame.font.Font('freesansbold.ttf', 20)
+    line_height = 30
+    y_position = 100
+
+    max_height = 450
+    scroll_speed = 10
+    scroll_y = 0
+
+    back_btn_about = buttons.Buttons(350, 550, 100, 50, about_screen, (255, 0, 0), (200, 0, 0), 'Back', 16, back_function)
+
+    description_text = (
+        "LudoPy adalah game ludo digital yang dibuat dengan menggunakan bahasa pemrograman python yang didukung oleh open gl, dan py game. Terinspirasi dari ludo konvensional, LudoPy dikembangkan agar menjadi lebih interaktif dan menarik. Berbeda dengan game ludo pada umumnya, LudoPy memiliki fitur unik yaitu random zone dimana ketika pion berada dalam petak atau zone tersebut, maka pion akan berpindah tempat secara acak."
+    )
+
+    lorem_font = pygame.font.Font('freesansbold.ttf', 16)
+    description_lines = textwrap.wrap(description_text, width=85)
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:  # Mouse wheel scroll up
+                    scroll_y += scroll_speed
+                elif event.button == 5:  # Mouse wheel scroll down
+                    scroll_y -= scroll_speed
+                elif back_btn_about.rect.collidepoint(pygame.mouse.get_pos()):
+                    waiting = False
+
+        about_screen.fill((255, 255, 255))
+
+        # Draw the title "About Us" with scrolling
+        about_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+
+        # Draw the description text with scrolling
+        for line in description_lines:
+            description_rendered = lorem_font.render(line, True, [0, 0, 0])
+            about_screen.blit(description_rendered, (50, y_position + scroll_y))
+            y_position += line_height
+
+        y_position += 20  # Jarak antara deskripsi dan profile
+
+        # Draw the developer profiles with scrolling
+        for profile in developer_profiles:
+            photo_path = os.path.join('resources', profile["photo"])
+            developer_image = pygame.image.load(photo_path)
+            developer_image = pygame.transform.scale(developer_image, (85, 85))
+            about_screen.blit(developer_image, (100, y_position + scroll_y))
+
+            text_lines = [f"{key.capitalize()} : {value}" for key, value in profile.items() if key not in ["photo", "offering"]]
+            for line in text_lines:
+                display_font = fontobj.render(line, True, [0, 0, 0])
+                display_rect = display_font.get_rect(topleft=(200, y_position + scroll_y))
+                about_screen.blit(display_font, display_rect)
+                y_position += line_height
+
+            offering_text = f"Offering : {profile['offering']}"
+            display_font = fontobj.render(offering_text, True, [0, 0, 0])
+            display_rect = display_font.get_rect(topleft=(200, y_position + scroll_y))
+            about_screen.blit(display_font, display_rect)
+            y_position += line_height  # Jarak antara Offering dan profil
+
+            y_position += 30  # Jarak antara setiap profil
+
+        y_position = 100  # Reset y_position
+
+        # Draw the "Back" button
+        back_btn_about.Draw()
+
+        pygame.display.flip()
+
+
+
+
+
+
+       
+
 
 def quitgame():
     global sts, position, playerturn, tokenclick, diceclick, firstdraw, draw
@@ -215,8 +525,11 @@ def Throw():
 ###
 
 ###button object###
+# Ubah urutan tombol agar sesuai dengan keinginan
 newbtn = buttons.Buttons(350, 250, 100, 50, screen, agreen, pgreen, 'New Game', 16, newgame)
-exitbtn = buttons.Buttons(350, 330, 100, 50, screen, ared, pred, 'Exit', 16, exit)
+rules_btn = buttons.Buttons(350, 330, 100, 50, screen, acolor, pcolor, 'Rules', 16, rules_function)
+about_btn = buttons.Buttons(350, 410, 100, 50, screen, ablue, pblue, 'About', 16, about_function)
+exitbtn = buttons.Buttons(350, 490, 100, 50, screen, ared, pred, 'Exit', 16, exit)
 quitbtn = buttons.Buttons(
     400, 10, 100, 30, screen, acolor, pcolor, "Quit Game", 14, quitgame
 )
@@ -546,6 +859,8 @@ while True:
     if sts == 0:
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
+        rules_btn.Draw()
+        about_btn.Draw()
         exitbtn.Draw()
 
     if sts == 1:

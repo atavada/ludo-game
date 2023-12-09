@@ -1,6 +1,7 @@
-import pygame, sys
+import pygame
+
 class Buttons:
-    def __init__(self, x, y, width, height, surface, acolor, pcolor, text, fontsize, function = None):
+    def __init__(self, x, y, width, height, surface, acolor, pcolor, text, fontsize, function=None):
         self.xcor = x
         self.ycor = y
         self.bname = text
@@ -12,19 +13,20 @@ class Buttons:
         self.fontsize = fontsize
         self.func = function
 
+        # Tambahkan atribut rect
+        self.rect = pygame.Rect(self.xcor, self.ycor, self.width, self.height)
+
     def Draw(self):
         mouse = pygame.mouse.get_pos()
-        if (self.xcor+self.width) >= mouse[0] >= self.xcor and (self.ycor+self.height) >= mouse[1] >= self.ycor:
-            pygame.draw.rect(self.surface, self.acolor, pygame.Rect(self.xcor, self.ycor, self.width, self.height), border_radius=10)
-            if self.func != None:
-                if pygame.mouse.get_pressed()[0] == 1:
-                    self.func()
+        if self.rect.collidepoint(mouse):
+            pygame.draw.rect(self.surface, self.acolor, self.rect, border_radius=10)
+            if self.func is not None and pygame.mouse.get_pressed()[0] == 1:
+                self.func()
         else:
-            pygame.draw.rect(self.surface, self.pcolor, pygame.Rect(self.xcor, self.ycor, self.width, self.height), border_radius=10)
+            pygame.draw.rect(self.surface, self.pcolor, self.rect, border_radius=10)
 
-        if self.bname != None:
+        if self.bname is not None:
             fontobj = pygame.font.Font('freesansbold.ttf', self.fontsize)
             displayfont = fontobj.render(self.bname, True, [255, 255, 255])
-            disrect = displayfont.get_rect()
-            disrect.center = (self.xcor + self.width/2, self.ycor + self.height/2 )
+            disrect = displayfont.get_rect(center=(self.xcor + self.width / 2, self.ycor + self.height / 2))
             self.surface.blit(displayfont, disrect)
