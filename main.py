@@ -1,5 +1,8 @@
 import pygame
 import sys
+from OpenGL.GL import *
+from OpenGL.GLU import *
+from pygame.locals import *
 import startgame
 import buttons
 import random
@@ -7,17 +10,24 @@ import player
 from pygame.mouse import get_pos as pos
 from coordinates import *
 import pygame.sysfont
+import os
+import textwrap
+from dice import *
+import asyncio
 
 
+# main screen
 pygame.init()
-###main screen##
-size = width, height = 800, 600
+pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
+pygame.display.init()
+info = pygame.display.Info()
 bgimage = pygame.image.load("resources/bg.jpg")
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Crap")
-###
+screen = pygame.Surface((info.current_w, info.current_h))
+pygame.display.set_caption("Ludo - Kelompok 3")
+# center the screen
+os.environ["SDL_VIDEO_CENTERED"] = "1"
 
-###button colors##
+# button colors
 pcolor = [46, 64, 83]
 acolor = [52, 73, 94]
 pred = [231, 76, 60]
@@ -28,64 +38,104 @@ ablue = [93, 173, 226]
 pblue = [52, 152, 219]
 ayellow = [244, 208, 63]
 pyellow = [241, 196, 15]
-###
 
-###Token buttons##
+# basic opengl configuration
+glViewport(0, 0, info.current_w, info.current_h)
+glDepthRange(0, 1)
+glMatrixMode(GL_PROJECTION)
+glMatrixMode(GL_MODELVIEW)
+glLoadIdentity()
+glShadeModel(GL_SMOOTH)
+glClearColor(0.0, 0.0, 0.0, 0.0)
+glClearDepth(1.0)
+glDisable(GL_DEPTH_TEST)
+glDisable(GL_LIGHTING)
+glDepthFunc(GL_LEQUAL)
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
+glEnable(GL_BLEND)
+
+texID = glGenTextures(1)
+# create pygame clock
+clock = pygame.time.Clock()
+text_font = pygame.font.Font(None, 30)  # some default font
+
+done = False
+
+
+def surfaceToTexture(pygame_surface):
+    global texID
+    rgb_surface = pygame.image.tostring(pygame_surface, "RGB")
+    glBindTexture(GL_TEXTURE_2D, texID)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    surface_rect = pygame_surface.get_rect()
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RGB,
+        surface_rect.width,
+        surface_rect.height,
+        0,
+        GL_RGB,
+        GL_UNSIGNED_BYTE,
+        rgb_surface,
+    )
+    glGenerateMipmap(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, 0)
+
+
+# pion buttons
 pcrd = [
     buttons.Buttons(600, 50, 100, 50, screen, ared, pred, "Token 1", 14, function=None),
-    buttons.Buttons(
-        600, 150, 100, 50, screen, ared, pred, "Token 2", 14, function=None
-    ),
-    buttons.Buttons(
-        600, 250, 100, 50, screen, ared, pred, "Token 3", 14, function=None
-    ),
-    buttons.Buttons(
-        600, 350, 100, 50, screen, ared, pred, "Token 4", 14, function=None
-    ),
+    buttons.Buttons(600, 150, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
+    buttons.Buttons(600, 250, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
+    buttons.Buttons(600, 350, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
 ]
 
 pcgrn = [
     buttons.Buttons(
-        600, 50, 100, 50, screen, agreen, pgreen, "Token 1", 14, function=None
+        600, 50, 100, 50, screen, agreen, pgreen, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, agreen, pgreen, "Token 2", 14, function=None
+        600, 150, 100, 50, screen, agreen, pgreen, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, agreen, pgreen, "Token 3", 14, function=None
+        600, 250, 100, 50, screen, agreen, pgreen, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, agreen, pgreen, "Token 4", 14, function=None
+        600, 350, 100, 50, screen, agreen, pgreen, "Pion 4", 14, function=None
     ),
 ]
 
 pcylw = [
     buttons.Buttons(
-        600, 50, 100, 50, screen, ayellow, pyellow, "Token 1", 14, function=None
+        600, 50, 100, 50, screen, ayellow, pyellow, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, ayellow, pyellow, "Token 2", 14, function=None
+        600, 150, 100, 50, screen, ayellow, pyellow, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, ayellow, pyellow, "Token 3", 14, function=None
+        600, 250, 100, 50, screen, ayellow, pyellow, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, ayellow, pyellow, "Token 4", 14, function=None
+        600, 350, 100, 50, screen, ayellow, pyellow, "Pion 4", 14, function=None
     ),
 ]
 
 pcble = [
     buttons.Buttons(
-        600, 50, 100, 50, screen, ablue, pblue, "Token 1", 14, function=None
+        600, 50, 100, 50, screen, ablue, pblue, "Pion 1", 14, function=None
     ),
     buttons.Buttons(
-        600, 150, 100, 50, screen, ablue, pblue, "Token 2", 14, function=None
+        600, 150, 100, 50, screen, ablue, pblue, "Pion 2", 14, function=None
     ),
     buttons.Buttons(
-        600, 250, 100, 50, screen, ablue, pblue, "Token 3", 14, function=None
+        600, 250, 100, 50, screen, ablue, pblue, "Pion 3", 14, function=None
     ),
     buttons.Buttons(
-        600, 350, 100, 50, screen, ablue, pblue, "Token 4", 14, function=None
+        600, 350, 100, 50, screen, ablue, pblue, "Pion 4", 14, function=None
     ),
 ]
 
@@ -97,9 +147,8 @@ diceimg = {
     5: pygame.image.load("resources\dice5.png"),
     6: pygame.image.load("resources\dice6.png"),
 }
-###
 
-###Token initiation
+# pion initiation
 Player = {
     0: (
         player.player(green, screen, "1"),
@@ -126,9 +175,8 @@ Player = {
         player.player(red, screen, "4"),
     ),
 }
-##
 
-### Start game parameters
+# start game parameters
 sts = 0
 draw = 0
 turn = 0
@@ -157,6 +205,7 @@ diceclick = False
 # 58 = home
 ###button function##
 
+
 def newgame():
     global sts
     sts = 1
@@ -165,6 +214,242 @@ def newgame():
 def exit():
     pygame.quit()
     sys.exit()
+
+
+def back_function():
+    global sts
+    sts = 0
+
+
+def rules_function():
+    pygame.init()
+
+    rules_screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("LUDO GAME")
+    rules_screen.fill((255, 255, 255))
+
+    title_font = pygame.font.Font("freesansbold.ttf", 32)
+    title_text = title_font.render("Peraturan Permainan Ludo", True, [0, 0, 0])
+    title_rect = title_text.get_rect(center=(400, 40))
+
+    rule_text = [
+        "Persiapan Permainan:",
+        "- Papan permainan Ludo memiliki jalur yang terbagi menjadi empat warna: merah, kuning, hijau, dan biru.",
+        "- Setiap pemain memiliki empat buah pion dalam warna yang sesuai.",
+        "- Pions ditempatkan di rumah masing-masing pemain di ujung jalur.",
+        "",
+        "Tujuan Permainan:",
+        "- Pemain pertama yang berhasil membawa keempat pionnya ke pusat papan permainan adalah pemenangnya.",
+        "",
+        "Aturan Pergeseran Pion:",
+        "- Pion dapat bergerak sejauh jumlah mata dadu yang dilempar.",
+        "- Jika dadu menunjukkan enam, pemain dapat melempar lagi dan bergerak pion baru atau memindahkan pion yang sudah bergerak.",
+        "- Pion hanya dapat diakses oleh pemain yang memiliki warna yang sesuai dengan warna jalur yang diikuti.",
+        "",
+        "Aturan Keamanan (Safe Zone):",
+        "- Kotak yang ditempati oleh pion sendiri adalah zona aman. Pion di zona aman tidak dapat dihentikan oleh pemain lain.",
+        "- Pemain lain tidak dapat melewati zona aman pemain lainnya.",
+        "",
+        "Aturan Memakan Pion Pemain Lain:",
+        "- Jika pion mendarat di kotak yang sudah ditempati oleh pion pemain lain, pion pemain lain tersebut dipindahkan kembali ke rumahnya.",
+        "",
+        "Aturan Masuk ke Pusat:",
+        "- Untuk memasukkan pion ke pusat papan, pemain harus melempar dadu dan mendapatkan jumlah mata yang sesuai dengan jarak yang tersisa menuju pusat.",
+        "- Pemain harus melempar jumlah mata yang pas untuk menyelesaikan perjalanan ke pusat.",
+        "",
+        "Aturan Dadu:",
+        "- Dadu dilempar dengan menekan tombol 'Throw Dice'.",
+        "- Jika dadu jatuh di luar papan atau tidak jelas, pemain harus melempar ulang.",
+        "",
+        "Pemenang:",
+        "- Pemain yang pertama kali membawa keempat pionnya ke pusat papan adalah pemenangnya.",
+    ]
+
+    fontobj = pygame.font.Font("freesansbold.ttf", 20)
+    max_width = 700  # Set the maximum width for text
+    line_height = 25
+    y_position = 100
+    scroll_speed = 10  # Set the scroll speed
+
+    scroll_y = 0
+
+    back_btn_rules = buttons.Buttons(
+        350,
+        550,
+        100,
+        50,
+        rules_screen,
+        (255, 0, 0),
+        (200, 0, 0),
+        "Back",
+        16,
+        back_function,
+    )
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    if scroll_y > -((len(rule_text) * line_height) - 550):
+                        scroll_y -= scroll_speed
+                elif event.key == pygame.K_DOWN:
+                    if scroll_y < 0:
+                        scroll_y += scroll_speed
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:  # Mouse wheel scroll up
+                    if scroll_y > -((len(rule_text) * line_height) - 550):
+                        scroll_y -= scroll_speed
+                elif event.button == 5:  # Mouse wheel scroll down
+                    if scroll_y < 0:
+                        scroll_y += scroll_speed
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if back_btn_rules.rect.collidepoint(pygame.mouse.get_pos()):
+                        waiting = False
+                        return
+
+        rules_screen.fill((255, 255, 255))
+
+        # Draw the title "Peraturan Permainan Ludo" with scrolling
+        rules_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+
+        for line in rule_text:
+            display_font = fontobj.render(line, True, (0, 0, 0))
+            display_rect = display_font.get_rect(topleft=(50, y_position))
+            rules_screen.blit(display_font, display_rect)
+            y_position += line_height
+
+        # Adjust y_position based on scrolling
+        y_position = 100 - scroll_y
+
+        back_btn_rules.Draw()
+
+        pygame.display.flip()
+
+
+def about_function():
+    pygame.init()
+
+    about_screen = pygame.display.set_mode((800, 600))
+    pygame.display.set_caption("LUDO GAME")
+
+    title_font = pygame.font.Font("freesansbold.ttf", 32)
+    title_text = title_font.render("About Us", True, [0, 0, 0])
+    title_rect = title_text.get_rect(center=(400, 40))
+
+    developer_profiles = [
+        {
+            "nama": "Alvalen Shafelbilyunazra",
+            "nim": "220535608548",
+            "photo": "Foto_Almet_Alvalen.png",
+            "offering": "TI - A",
+        },
+        {
+            "nama": "Ardha A. P. Agustavada",
+            "nim": "220535608503",
+            "photo": "Foto_Almet_Ardha.png",
+            "offering": "TI - A",
+        },
+        {
+            "nama": "Azarya A. K. Moeljono",
+            "nim": "220535608951",
+            "photo": "Azarya_Foto_Almet.png",
+            "offering": "TI - A",
+        },
+        # Tambahkan profil pengembang lainnya sesuai kebutuhan
+    ]
+
+    fontobj = pygame.font.Font("freesansbold.ttf", 20)
+    line_height = 30
+    y_position = 100
+
+    max_height = 450
+    scroll_speed = 10
+    scroll_y = 0
+
+    back_btn_about = buttons.Buttons(
+        350,
+        550,
+        100,
+        50,
+        about_screen,
+        (255, 0, 0),
+        (200, 0, 0),
+        "Back",
+        16,
+        back_function,
+    )
+
+    description_text = "LudoPy adalah game ludo digital yang dibuat dengan menggunakan bahasa pemrograman python yang didukung oleh open gl, dan py game. Terinspirasi dari ludo konvensional, LudoPy dikembangkan agar menjadi lebih interaktif dan menarik. Berbeda dengan game ludo pada umumnya, LudoPy memiliki fitur unik yaitu random zone dimana ketika pion berada dalam petak atau zone tersebut, maka pion akan berpindah tempat secara acak."
+
+    lorem_font = pygame.font.Font("freesansbold.ttf", 16)
+    description_lines = textwrap.wrap(description_text, width=85)
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting = False
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:  # Mouse wheel scroll up
+                    scroll_y += scroll_speed
+                elif event.button == 5:  # Mouse wheel scroll down
+                    scroll_y -= scroll_speed
+                elif back_btn_about.rect.collidepoint(pygame.mouse.get_pos()):
+                    waiting = False
+
+        about_screen.fill((255, 255, 255))
+
+        # Draw the title "About Us" with scrolling
+        about_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
+
+        # Draw the description text with scrolling
+        for line in description_lines:
+            description_rendered = lorem_font.render(line, True, [0, 0, 0])
+            about_screen.blit(description_rendered, (50, y_position + scroll_y))
+            y_position += line_height
+
+        y_position += 20  # Jarak antara deskripsi dan profile
+
+        # Draw the developer profiles with scrolling
+        for profile in developer_profiles:
+            photo_path = os.path.join("resources", profile["photo"])
+            developer_image = pygame.image.load(photo_path)
+            developer_image = pygame.transform.scale(developer_image, (85, 85))
+            about_screen.blit(developer_image, (100, y_position + scroll_y))
+
+            text_lines = [
+                f"{key.capitalize()} : {value}"
+                for key, value in profile.items()
+                if key not in ["photo", "offering"]
+            ]
+            for line in text_lines:
+                display_font = fontobj.render(line, True, [0, 0, 0])
+                display_rect = display_font.get_rect(
+                    topleft=(200, y_position + scroll_y)
+                )
+                about_screen.blit(display_font, display_rect)
+                y_position += line_height
+
+            offering_text = f"Offering : {profile['offering']}"
+            display_font = fontobj.render(offering_text, True, [0, 0, 0])
+            display_rect = display_font.get_rect(topleft=(200, y_position + scroll_y))
+            about_screen.blit(display_font, display_rect)
+            y_position += line_height  # Jarak antara Offering dan profil
+
+            y_position += 30  # Jarak antara setiap profil
+
+        y_position = 100  # Reset y_position
+
+        # Draw the "Back" button
+        back_btn_about.Draw()
+
+        pygame.display.flip()
 
 
 def quitgame():
@@ -189,36 +474,27 @@ def quitgame():
 
 
 def Throw():
-    clock = pygame.time.Clock()
-    global draw, tokenclick, diceclick    
-    frames = []
+    global draw, tokenclick, diceclick
     if tokenclick == True:
         draw = random.randint(1, 6)
-        frames = [diceimg[i] for i in range(1, 7)]
         tokenclick = False
         diceclick = True
-    
-    size = 800, 600
-    screen = pygame.display.set_mode(size)
-    screen.fill((255, 255, 255)) 
+        print(spinning)
+        start(draw)
+        CleanupGL()
 
-    for frame in frames:
-        window_width, window_height = pygame.display.get_surface().get_size()
-        frame_width, frame_height = frame.get_size()
-        center_x = (window_width - frame_width) // 2
-        center_y = (window_height - frame_height) // 2
-        screen.blit(frame, (center_x, center_y)) 
-        pygame.display.flip()
-        pygame.time.wait(500)
-    pygame.display.flip()
-    
-    clock.tick(2)
-    # time.sleep(3)
-###
 
-###button object###
-newbtn = buttons.Buttons(350, 250, 100, 50, screen, agreen, pgreen, 'New Game', 16, newgame)
-exitbtn = buttons.Buttons(350, 330, 100, 50, screen, ared, pred, 'Exit', 16, exit)
+# button object
+newbtn = buttons.Buttons(
+    350, 250, 100, 50, screen, agreen, pgreen, "New Game", 16, newgame
+)
+rules_btn = buttons.Buttons(
+    350, 330, 100, 50, screen, acolor, pcolor, "Rules", 16, rules_function
+)
+about_btn = buttons.Buttons(
+    350, 410, 100, 50, screen, ablue, pblue, "About", 16, about_function
+)
+exitbtn = buttons.Buttons(350, 490, 100, 50, screen, ared, pred, "Exit", 16, exit)
 quitbtn = buttons.Buttons(
     400, 10, 100, 30, screen, acolor, pcolor, "Quit Game", 14, quitgame
 )
@@ -228,10 +504,9 @@ quitbtn1 = buttons.Buttons(
 dicebtn = buttons.Buttons(
     100, 10, 100, 30, screen, acolor, pcolor, "Throw Dice", 14, Throw
 )
-###
 
 
-###game function##3
+# game function
 def UpBoard():
     for i in range(4):
         for j in range(4):
@@ -391,6 +666,46 @@ def CollisionChecker(pt, token):
                     position[2][i] = -1
 
 
+def randomZone(pt, token):
+    # if player land in
+    if pt == 0 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            # set the token to random zone
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 1 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 2 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 3 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+
 def playerchoice():
     global playerturn, diceclick, tokenclick, position, draw
     if diceclick == True:
@@ -541,13 +856,16 @@ def showwin(ply):
 
 
 sex = 0
+while not done:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            done = True
 
-###Actual Loop
-while True:
-    pygame.display.flip()
     if sts == 0:
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
+        rules_btn.Draw()
+        about_btn.Draw()
         exitbtn.Draw()
 
     if sts == 1:
@@ -580,7 +898,27 @@ while True:
             elif win() == True:
                 showwin(playerturn)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+    # prepare to render the texture-mapped rectangle
+    glClear(GL_COLOR_BUFFER_BIT)
+    glLoadIdentity()
+    glDisable(GL_LIGHTING)
+    glEnable(GL_TEXTURE_2D)
+
+    # draw texture-mapped rectangle
+    surfaceToTexture(screen)
+    glBindTexture(GL_TEXTURE_2D, texID)
+    glBegin(GL_QUADS)
+    glTexCoord2f(0, 0)
+    glVertex2f(-1, 1)
+    glTexCoord2f(0, 1)
+    glVertex2f(-1, -1)
+    glTexCoord2f(1, 1)
+    glVertex2f(1, -1)
+    glTexCoord2f(1, 0)
+    glVertex2f(1, 1)
+    glEnd()
+
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()
