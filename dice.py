@@ -1,18 +1,18 @@
+import pygame
+from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
-from OpenGL.GLUT import *
 from PIL import Image  # Updated import for Python 3
 import sys
 import random as r
 import time
-import time
-
+import numpy as np
 
 # string to identify when ESC is pressed
 ESCAPE = "\033"
 RETURN = "\r"
 
-# ID of the GLUT window
+# ID of the Pygame window
 window = 0
 dice = 0
 # angle and rotation coordinates of the cube
@@ -20,7 +20,7 @@ angulo = 0.0
 xrot = yrot = zrot = 5.0
 texCounter = 0
 start_time = 0
-spinning = False
+spinning = True
 
 # cube vertices
 vertices = (
@@ -64,35 +64,50 @@ texSuperficies = (
 )
 
 texturas = ((0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 1.0))
+image_filenames = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg"]
 image = []
+loaded = {
+    0: False,
+    1: False,
+    2: False,
+    3: False,
+    4: False,
+    5: False,
+}
+for filename in image_filenames:
+    img = Image.open("textures-fast/" + filename)
+    img = img.convert("RGB")
+    image.append(img)
+
+textures = []
+
+
+def LoadTextures():
+    global image, textures
+
+    for img in image:
+        ix, iy = img.size
+        strImage = img.tobytes("raw", "RGB", 0, -1)  # Updated method to get image bytes
+
+        texture = glGenTextures(1)
+        glBindTexture(GL_TEXTURE_2D, texture)
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+        glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGB, GL_UNSIGNED_BYTE, strImage)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+
+        textures.append(texture)
 
 
 # load textures from the saved images in the array
-def LoadTextures(index):
-    global image
-
-    ix, iy = image[index].size
-    strImage = image[index].tobytes(
-        "raw", "RGBX", 0, -1
-    )  # Updated method to get image bytes
-
-    glBindTexture(GL_TEXTURE_2D, glGenTextures(1))
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, strImage)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
 
-# Configure initial parameters of the window
 # called immediately after creating the window
 def InitGL(width, height):
     # load textures
-    LoadTextures(0)
     glEnable(GL_TEXTURE_2D)
+    LoadTextures()
 
     # clear the background with black color
     glClearColor(0.0, 0.0, 0.0, 0.0)
@@ -113,6 +128,26 @@ def InitGL(width, height):
     glMatrixMode(GL_MODELVIEW)
 
 
+def CleanupGL():
+    glFlush()
+    glDisable(GL_TEXTURE_2D)
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)
+    glDepthFunc(GL_LESS)
+    glDisable(GL_DEPTH_TEST)
+    glShadeModel(GL_SMOOTH)
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_DONT_CARE)
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+    glMatrixMode(GL_MODELVIEW)
+
+    textures_array = np.array(textures, dtype=np.uint32)
+    glDeleteTextures(textures_array)
+
+    global xrot, yrot, zrot
+    xrot = yrot = zrot = 0.0
+
+
 # Redraw window when it is resized
 def ReSizeGLScene(width, height):
     # prevent size from being zero
@@ -126,20 +161,9 @@ def ReSizeGLScene(width, height):
     glMatrixMode(GL_MODELVIEW)
 
 
-# Increase rotation speed when the key is pressed
-# def increaseRotation():
-#     global angulo, xrot, yrot, zrot
-#     # ... (unchanged)
-
-# Decrease rotation speed to show the obtained number
-# def decreaseRotation():
-#     global angulo, xrot, yrot, zrot
-#     # ... (unchanged)
-
-
 # Draw objects in the environment
-def DrawGLScene():
-    global xrot, yrot, zrot, spinning, dice, start_time
+def DrawGLScene(dice):
+    global xrot, yrot, zrot, spinning, start_time, window
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
@@ -159,7 +183,7 @@ def DrawGLScene():
 
     # Drawing area
     for i, superficie in enumerate(superficies):
-        LoadTextures(i)
+        glBindTexture(GL_TEXTURE_2D, textures[i])
         glBegin(GL_QUADS)
         texVertices = texSuperficies[i]
         for i, vertice in enumerate(superficie):
@@ -167,7 +191,7 @@ def DrawGLScene():
             glVertex3fv(vertices[vertice])
         glEnd()
 
-    glutSwapBuffers()
+    pygame.display.flip()
 
     if spinning:
         elapsed_time = time.time() - start_time
@@ -181,82 +205,38 @@ def DrawGLScene():
             # Use coords and number to determine the rotation
             number = dice
             if xrot < coords[number][0]:
-                xrot += 1
+                xrot += 0.5
             elif xrot > coords[number][0]:
-                xrot -= 1
-            elif yrot < coords[number][1]:
-                yrot += 1
+                xrot -= 0.5
+            if yrot < coords[number][1]:
+                yrot += 0.5
             elif yrot > coords[number][1]:
-                yrot -= 1
-            elif zrot < coords[number][2]:
-                zrot += 1
+                yrot -= 0.5
+            if zrot < coords[number][2]:
+                zrot += 0.5
             elif zrot > coords[number][2]:
-                zrot -= 1
-            print(xrot, yrot, zrot)
+                zrot -= 0.5
             if (
                 xrot == coords[number][0]
                 and yrot == coords[number][1]
                 and zrot == coords[number][2]
             ):
                 spinning = False
-                print("Dice stopped")
-
-    # else:
-    #     spinning = False
-
-    #     dice = 0
-    #     print("Dice stopped")
+                pygame.time.wait(1000)
 
 
-# Manage pressed keys
-def keyPressed(key, x, y):
-    global angulo, xrot, yrot, zrot, spinning, dice, start_time
-    global window
+def start(dice):
+    global window, spinning, start_time
+    spinning = True
+    start_time = time.time()
 
-    # ESCAPE
-    if key == b"\033":
-        glutDestroyWindow(window)
-        sys.exit()
-    if key == b"\r":
-        print("Launching process to be implemented")
-        spinning = True
-        dice = r.randint(1, 6)
-        print("Dice: ", dice)
-        start_time = time.time()
+    pygame.init()
+    display = (800, 600)
+    window = pygame.display.set_mode(display, DOUBLEBUF | OPENGL)
 
-
-def start(*args):
-    global window, image
-
-    # check command-line arguments
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "fast" or sys.argv[1] == "slow":
-            for i in range(1, 7):
-                image.append(
-                    Image.open("textures-" + sys.argv[1] + "/" + str(i) + ".jpg")
-                )
-        else:
-            print("dice.py: invalid option", sys.argv[1])
-            print("Default texture mode applied.")
-            for i in range(1, 7):
-                image.append(Image.open("textures-fast/" + str(i) + ".jpg"))
-    else:
-        for i in range(1, 7):
-            image.append(Image.open("textures-fast/" + str(i) + ".jpg"))
-
-    glutInit(sys.argv)
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-    glutInitWindowSize(640, 480)
-    glutInitWindowPosition(0, 0)
-    window = glutCreateWindow("3D Dice")
-
-    glutDisplayFunc(DrawGLScene)
-    glutIdleFunc(DrawGLScene)
-    glutReshapeFunc(ReSizeGLScene)
-    glutKeyboardFunc(keyPressed)
-
-    InitGL(640, 480)
-    glutMainLoop()
+    InitGL(800, 600)
+    while spinning:
+        DrawGLScene(dice)
 
 
 if __name__ == "__main__":

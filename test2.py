@@ -11,6 +11,8 @@ from pygame.mouse import get_pos as pos
 from coordinates import *
 import pygame.sysfont
 from dice import *
+import os
+import asyncio
 
 # set pygame screen
 pygame.init()
@@ -19,6 +21,8 @@ pygame.display.init()
 info = pygame.display.Info()
 bgimage = pygame.image.load("resources/bg.jpg")
 screen = pygame.Surface((info.current_w, info.current_h))
+# center the screen
+os.environ["SDL_VIDEO_CENTERED"] = "1"
 
 
 ###button colors##
@@ -247,11 +251,14 @@ def quitgame():
 
 
 def Throw():
-    global draw, tokenclick, diceclick
+    global draw, tokenclick, diceclick, spinning
     if tokenclick == True:
         draw = random.randint(1, 6)
         tokenclick = False
         diceclick = True
+        print(spinning)
+        start(draw)
+        CleanupGL()
 
 
 ###
@@ -433,6 +440,46 @@ def CollisionChecker(pt, token):
                     position[2][i] = -1
 
 
+def randomZone(pt, token):
+    # if player land in
+    if pt == 0 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            # set the token to random zone
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 1 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 2 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+    elif pt == 3 and position[pt][token] != -1:
+        if (
+            position[pt][token] == 5
+            or position[pt][token] == 18
+            or position[pt][token] == 31
+            or position[pt][token] == 44
+        ):
+            position[pt][token] = random.randint(0, 56)
+
+
 def playerchoice():
     global playerturn, diceclick, tokenclick, position, draw
     if diceclick == True:
@@ -455,6 +502,7 @@ def playerchoice():
                 elif position[playerturn][0] == -1 and draw == 6:
                     position[playerturn][0] += 1
                 CollisionChecker(playerturn, 0)
+                randomZone(playerturn, 0)
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -471,10 +519,11 @@ def playerchoice():
                     and position[playerturn][1] != -1
                 ):
                     position[playerturn][1] += draw
-                elif position[playerturn][0] == -1 and draw == 6:
-                    position[playerturn][0] += 1
+                elif position[playerturn][1] == -1 and draw == 6:
+                    position[playerturn][1] += 1
 
                 CollisionChecker(playerturn, 1)
+                randomZone(playerturn, 1)
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -494,6 +543,7 @@ def playerchoice():
                 elif position[playerturn][2] == -1 and draw == 6:
                     position[playerturn][2] += 1
                 CollisionChecker(playerturn, 2)
+                randomZone(playerturn, 2)
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -512,7 +562,8 @@ def playerchoice():
                     position[playerturn][3] += draw
                 elif position[playerturn][3] == -1 and draw == 6:
                     position[playerturn][3] += 1
-                CollisionChecker(playerturn, 2)
+                CollisionChecker(playerturn, 3)
+                randomZone(playerturn, 3)
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -594,7 +645,6 @@ while not done:
         newbtn.Draw()
         exitbtn.Draw()
 
-
     if sts == 1:
         screen.fill((255, 255, 255))
         newgame = startgame.board(screen)
@@ -646,19 +696,17 @@ while not done:
     glEnd()
 
     # create rect inthe middle of the screen using opengl 0.
-    glDisable(GL_TEXTURE_2D)
-    glLoadIdentity()
-    glLineWidth(1)
-    glColor3f(1, 1, 1)
-    glBegin(GL_QUADS)
-    glVertex2f(-0.1, 0.1)
-    glVertex2f(-0.1, -0.1)
-    glVertex2f(0.1, -0.1)
-    glVertex2f(0.1, 0.1)
-    glEnd()
-
-    # show the 3d dice
-    # start()
+    # glDisable(GL_TEXTURE_2D)
+    # glLoadIdentity()
+    # glLineWidth(1)
+    # glColor3f(1, 1, 1)
+    # glBegin(GL_QUADS)
+    # glVertex2f(-0.1, 0.1)
+    # glVertex2f(-0.1, -0.1)
+    # glVertex2f(0.1, -0.1)
+    # glVertex2f(0.1, 0.1)
+    # glEnd()
+    # wait for some time
 
     pygame.display.flip()
     clock.tick(60)
