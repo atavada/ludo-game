@@ -177,7 +177,7 @@ Player = {
 }
 
 # start game parameters
-sts = 0
+sts = -1
 draw = 0
 turn = 0
 position = {
@@ -841,13 +841,31 @@ def showwin(ply):
         screen.blit(displayfont, disrect)
     quitbtn1.Draw()
 
+def splashscreen(screen):
+    global sts
 
 sex = 0
+# play soundtrack
+music = pygame.mixer.music.load("resources/audio/soundtrack menu.mp3")
+# play
+pygame.mixer.music.play(-1) 
 while not done:
     for event in pygame.event.get():
         if event.type == QUIT:
             done = True
 
+    if sts == -1:
+        splash = pygame.image.load("resources/bg.jpg")
+        screen.blit(splash, (0, 0))
+        # add message tap to continue
+        fontobj = pygame.font.Font("freesansbold.ttf", 18)
+        displayfont = fontobj.render("Tap to continue", True, [0, 0, 0])
+        disrect = displayfont.get_rect()
+        disrect.center = (400, 550)
+        screen.blit(displayfont, disrect)
+        # if click on splash screen, go to main menu
+        if pygame.mouse.get_pressed()[0] == 1:
+            sts = 0
     if sts == 0:
         screen.blit(bgimage, (0, 0))
         newbtn.Draw()
@@ -856,6 +874,8 @@ while not done:
         exitbtn.Draw()
 
     if sts == 1:
+        # stop soundtrack
+        pygame.mixer.music.stop()
         screen.fill((255, 255, 255))
         newgame = startgame.board(screen)
         newgame.createboard()
