@@ -24,7 +24,8 @@ info = pygame.display.Info()
 bgimage = pygame.image.load("resources/bg.jpg")
 screen = pygame.Surface((info.current_w, info.current_h))
 pygame.display.set_caption("LUDOang")
-# center the screen
+icon = pygame.image.load("resources/icon/icon.png")
+pygame.display.set_icon(icon)
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 
 # button colors
@@ -231,7 +232,7 @@ def newgame():
     pygame.mixer.music.load(random.choice(music_list))
     # decrase volume
     pygame.mixer.music.set_volume(0.6)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
 
 def exit():
@@ -951,6 +952,10 @@ while not done:
         # if mouse click up
         if event.type == pygame.MOUSEBUTTONUP and sts == -1 and loading > 1:
             sts = 0
+            # play click sound
+            click_sound = pygame.mixer.Sound("resources/audio/btn.mp3")
+            click_sound.play()
+            
 
     if sts == -1:
         splash = pygame.image.load("resources/bg.jpg")
