@@ -416,6 +416,22 @@ def about_function():
 
         about_screen.fill((255, 255, 255))
 
+        poster = "resources/poster.png"
+        # render the poster image in the bottom of screen
+        poster_image = pygame.image.load(poster)
+        poster_image = pygame.transform.scale(poster_image, (565.6, 800))
+        # add y value to scroll and center
+        poster_rect = poster_image.get_rect(
+            center=(400, 1500 - poster_image.get_height() // 2 + scroll_y)
+        )
+        about_screen.blit(poster_image, poster_rect)
+
+        # blit teks Poster before the poster image with 40 size
+        poster_text = title_font.render("Poster", True, [0, 0, 0])
+        poster_rect_text = poster_text.get_rect(center=(400, 1500 - scroll_y))
+        
+        about_screen.blit(poster_text, (400 - poster_rect_text.width // 2, 650 + scroll_y))
+
         # Draw the title "About Us" with scrolling
         about_screen.blit(title_text, (400 - title_rect.width // 2, 40 + scroll_y))
 
