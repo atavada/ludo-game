@@ -190,6 +190,12 @@ Player = {
 sts = -1
 draw = 0
 turn = 0
+###
+# each player 4 token state
+# -1 = not in game
+# 0-56 = position in game
+# 57 = win
+# 58 = home
 position = {
     0: [56, 56, -1, -1],
     1: [-1, -1, -1, -1],
@@ -207,15 +213,7 @@ tokenclick = True
 diceclick = False
 
 
-###
-# each player 4 token state
-# -1 = not in game
-# 0-56 = position in game
-# 57 = win
-# 58 = home
 ###button function##
-
-
 def newgame():
     global sts
     sts = 1
@@ -241,12 +239,11 @@ def back_function():
     global sts
     sts = 0
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
-    # refresh screen
     screen = pygame.Surface((info.current_w, info.current_h))
 
 
 def rules_function():
-    r_screen = pygame.display.set_mode((800, 600))
+    r_screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
     r_screen.fill((255, 255, 255))
     title_font = pygame.font.Font("freesansbold.ttf", 32)
     title_text = title_font.render("Peraturan Permainan Ludo", True, [0, 0, 0])
@@ -357,7 +354,7 @@ def rules_function():
 
 
 def about_function():
-    about_screen = pygame.display.set_mode((800, 600))
+    about_screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
     pygame.display.set_caption("LUDO GAME")
 
     title_font = pygame.font.Font("freesansbold.ttf", 32)
@@ -953,8 +950,20 @@ def showwin(ply):
     quitbtn1.Draw()
 
 
-def splashscreen(screen):
-    global sts
+def loading_screen():
+    global diceimg, sts
+    screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
+    screen.fill((255, 255, 255))
+    frames = [diceimg[1], diceimg[2], diceimg[3], diceimg[4], diceimg[5], diceimg[6]]
+    for frame in frames:
+        window_width, window_height = pygame.display.get_surface().get_size()
+        frame_width, frame_height = frame.get_size()
+        center_x = (window_width - frame_width) // 2
+        center_y = (window_height - frame_height) // 2
+        screen.blit(frame, (center_x, center_y))
+        pygame.display.flip()
+        pygame.time.wait(500)
+    pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
 
 
 soundtracklist = [
@@ -981,6 +990,7 @@ random_tips = [
     "Minimal Maksimal",
 ]
 
+# show showwin screen
 tips = random.choice(random_tips)
 while not done:
     for event in pygame.event.get():
@@ -988,10 +998,11 @@ while not done:
             done = True
         # if mouse click up
         if event.type == pygame.MOUSEBUTTONUP and sts == -1 and loading > 1:
-            sts = 0
             # play click sound
             click_sound = pygame.mixer.Sound("resources/audio/btn.mp3")
             click_sound.play()
+            loading_screen()
+            sts = 0
 
     if sts == -1:
         splash = pygame.image.load("resources/bg.jpg")
