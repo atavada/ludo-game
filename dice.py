@@ -119,6 +119,14 @@ def InitGL(width, height):
     glEnable(GL_DEPTH_TEST)
     # enable Smooth Color Shading
     glShadeModel(GL_SMOOTH)
+    # add lighting
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glLightfv(GL_LIGHT0, GL_POSITION, (0, 0, 1, 0))
+    glLightfv(GL_LIGHT0, GL_AMBIENT, (0.5, 0.5, 0.5, 1))
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, (1.0, 1.0, 1.0, 1))
+
+    
 
     # Perspective calculations
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST)
@@ -205,17 +213,17 @@ def DrawGLScene(dice):
             # Use coords and number to determine the rotation
             number = dice
             if xrot < coords[number][0]:
-                xrot += 0.5
+                xrot += 1
             elif xrot > coords[number][0]:
-                xrot -= 0.5
+                xrot -= 1
             if yrot < coords[number][1]:
-                yrot += 0.5
+                yrot += 1
             elif yrot > coords[number][1]:
-                yrot -= 0.5
+                yrot -= 1
             if zrot < coords[number][2]:
-                zrot += 0.5
+                zrot += 1
             elif zrot > coords[number][2]:
-                zrot -= 0.5
+                zrot -= 1
             if (
                 xrot == coords[number][0]
                 and yrot == coords[number][1]
