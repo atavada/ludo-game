@@ -880,6 +880,11 @@ random_tips = [
     "Jangan Lupa Tidur!",
     "Furi indonesia! Solid Solid Solid",
     "YNTKTS",
+    "Jangan Lupa Mandi!",
+    "Jangan Lupa Sholat!",
+    "Jangan Lupa Berdoa!",
+    "Jangan Lupa Bersyukur!",
+    
 ]
         
 tips = random.choice(random_tips)
