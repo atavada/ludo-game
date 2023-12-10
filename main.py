@@ -93,7 +93,6 @@ pcrd = [
     buttons.Buttons(600, 110, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
     buttons.Buttons(600, 170, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
     buttons.Buttons(600, 230, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
-    # skip button
     buttons.Buttons(600, 290, 100, 50, screen, ared, pred, "Skip", 14, function=None),
 ]
 
@@ -110,7 +109,6 @@ pcgrn = [
     buttons.Buttons(
         600, 230, 100, 50, screen, agreen, pgreen, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(
         600, 290, 100, 50, screen, agreen, pgreen, "Skip", 14, function=None
     ),
@@ -129,7 +127,6 @@ pcylw = [
     buttons.Buttons(
         600, 230, 100, 50, screen, ayellow, pyellow, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(
         600, 290, 100, 50, screen, ayellow, pyellow, "Skip", 14, function=None
     ),
@@ -148,7 +145,6 @@ pcble = [
     buttons.Buttons(
         600, 230, 100, 50, screen, ablue, pblue, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(600, 290, 100, 50, screen, ablue, pblue, "Skip", 14, function=None),
 ]
 
@@ -189,19 +185,20 @@ Player = {
     ),
 }
 
+
 # start game parameters
 sts = -1
 draw = 0
 turn = 0
 position = {
-    0: [-1, -1, -1, -1],
+    0: [56, 56, -1, -1],
     1: [-1, -1, -1, -1],
     2: [-1, -1, -1, -1],
     3: [-1, -1, -1, -1],
 }
 playerturn = 0
 firstdraw = [
-    True,
+    False,
     True,
     True,
     True,
@@ -604,45 +601,75 @@ def pcd(player):
 
 
 def PlayerTokenSelect(player):
-    global draw, firstdraw, playerturn
+    global playerturn, diceclick, tokenclick, position, draw
+    if playerturn == 4:
+        playerturn = 0
     if player == 0:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcgrn[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcgrn[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcgrn[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
+            pcgrn[4].Draw()
+            skipturn()
+            for i in range(4):
                 if i < 4:
-                    if position[player][i] != -1:
+                    if position[player][i] != -1 and position[player][i] != 56:
                         pcgrn[i].Draw()
         pcd(player)
     if player == 1:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcylw[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcylw[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcylw[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
+            pcylw[4].Draw()
+            skipturn()
+            for i in range(4):
                 if i < 4:
-                    if position[player][i] != -1:
+                    if position[player][i] != -1 and position[player][i] != 56:
                         pcylw[i].Draw()
         pcd(player)
     if player == 2:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcble[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcble[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcble[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
+            pcble[4].Draw()
+            skipturn()
+            for i in range(4):
                 if i < 4:
-                    if position[player][i] != -1:
+                    if position[player][i] != -1 and position[player][i] != 56:
                         pcble[i].Draw()
         pcd(player)
     if player == 3:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcrd[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcrd[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcrd[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
+            pcrd[4].Draw()
+            skipturn()
+            for i in range(4):
                 if i < 4:
-                    if position[player][i] != -1:
+                    if position[player][i] != -1 and position[player][i] != 56:
                         pcrd[i].Draw()
         pcd(player)
 
@@ -747,6 +774,19 @@ def randomZone(pt, token):
             position[pt][token] = random.randint(-1, 56)
 
 
+def skipturn():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
+            if pygame.mouse.get_pressed()[0] == 1:
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+
+
 def playerchoice():
     global playerturn, diceclick, tokenclick, position, draw
     if diceclick == True:
@@ -831,13 +871,6 @@ def playerchoice():
                     position[playerturn][3] += 1
                 randomZone(playerturn, 3)
                 CollisionChecker(playerturn, 3)
-                diceclick = False
-                tokenclick = True
-                if draw != 6:
-                    playerturn += 1
-        # skip button to skip turn
-        elif 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
-            if pygame.mouse.get_pressed()[0] == 1:
                 diceclick = False
                 tokenclick = True
                 if draw != 6:
@@ -1046,7 +1079,7 @@ while not done:
                 screen.blit(diceimg[draw], (275, 0))
                 UpBoard()
                 PlayerTokenSelect(playerturn)
-                playerchoice()
+                # playerchoice()
             elif win() == True:
                 showwin(playerturn)
 
