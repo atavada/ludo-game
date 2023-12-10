@@ -19,7 +19,7 @@ pygame.init()
 pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
 pygame.display.init()
 info = pygame.display.Info()
-bgimage = pygame.image.load("resources/bg.jpg")
+bgimage = pygame.image.load("resources/images/bg.jpg")
 screen = pygame.Surface((info.current_w, info.current_h))
 pygame.display.set_caption("LUDOang")
 icon = pygame.image.load("resources/icon/icon.png")
@@ -147,12 +147,12 @@ pcble = [
 ]
 
 diceimg = {
-    1: pygame.image.load("resources\dice1.png"),
-    2: pygame.image.load("resources\dice2.png"),
-    3: pygame.image.load("resources\dice3.png"),
-    4: pygame.image.load("resources\dice4.png"),
-    5: pygame.image.load("resources\dice5.png"),
-    6: pygame.image.load("resources\dice6.png"),
+    1: pygame.image.load("resources/images/dice/dice1.png"),
+    2: pygame.image.load("resources/images/dice/dice2.png"),
+    3: pygame.image.load("resources/images/dice/dice3.png"),
+    4: pygame.image.load("resources/images/dice/dice4.png"),
+    5: pygame.image.load("resources/images/dice/dice5.png"),
+    6: pygame.image.load("resources/images/dice/dice6.png"),
 }
 
 # pion initiation
@@ -363,19 +363,19 @@ def about_function():
         {
             "nama": "Alvalen Shafelbilyunazra",
             "nim": "220535608548",
-            "photo": "Foto_Almet_Alvalen.png",
+            "photo": "Alvalen.png",
             "offering": "TI - A",
         },
         {
             "nama": "Ardha A. P. Agustavada",
             "nim": "220535608503",
-            "photo": "Foto_Almet_Ardha.png",
+            "photo": "Ardha.png",
             "offering": "TI - A",
         },
         {
             "nama": "Azarya A. K. Moeljono",
             "nim": "220535608951",
-            "photo": "Azarya_Foto_Almet.png",
+            "photo": "Azarya.png",
             "offering": "TI - A",
         },
         # Tambahkan profil pengembang lainnya sesuai kebutuhan
@@ -437,7 +437,7 @@ def about_function():
 
         # Draw the developer profiles with scrolling
         for profile in developer_profiles:
-            photo_path = os.path.join("resources", profile["photo"])
+            photo_path = os.path.join("resources/images/profile", profile["photo"])
             developer_image = pygame.image.load(photo_path)
             developer_image = pygame.transform.scale(developer_image, (85, 85))
             about_screen.blit(developer_image, (100, y_position + scroll_y))
@@ -1140,8 +1140,7 @@ while not done:
             sts = 0
 
     if sts == -1:
-        splash = pygame.image.load("resources/bg.jpg")
-        screen.blit(splash, (0, 0))
+        screen.blit(bgimage, (0, 0))
         if loading > 1:
             # Add message "Tap to continue" with outline
             fontobj = pygame.font.Font("freesansbold.ttf", 18)
