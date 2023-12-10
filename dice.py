@@ -99,10 +99,6 @@ def LoadTextures():
 
         textures.append(texture)
 
-
-# load textures from the saved images in the array
-
-
 # called immediately after creating the window
 def InitGL(width, height):
     # load textures
