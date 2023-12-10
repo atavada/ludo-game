@@ -613,16 +613,16 @@ def PlayerTokenSelect(player):
         else:
             pcgrn[4].Draw()
             skipturn()
-            if position[player][0] != -1 and position[player][0] != 56:
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
                 pcgrn[0].Draw()
                 movepion_0()
-            if position[player][1] != -1 and position[player][1] != 56:
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
                 pcgrn[1].Draw()
                 movepion_1()
-            if position[player][2] != -1 and position[player][2] != 56:
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
                 pcgrn[2].Draw()
                 movepion_2()
-            if position[player][3] != -1 and position[player][3] != 56:
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
                 pcgrn[3].Draw()
                 movepion_3()
         pcd(player)
@@ -638,16 +638,16 @@ def PlayerTokenSelect(player):
         else:
             pcylw[4].Draw()
             skipturn()
-            if position[player][0] != -1 and position[player][0] != 56:
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
                 pcylw[0].Draw()
                 movepion_0()
-            if position[player][1] != -1 and position[player][1] != 56:
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
                 pcylw[1].Draw()
                 movepion_1()
-            if position[player][2] != -1 and position[player][2] != 56:
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
                 pcylw[2].Draw()
                 movepion_2()
-            if position[player][3] != -1 and position[player][3] != 56:
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
                 pcylw[3].Draw()
                 movepion_3()
         pcd(player)
@@ -663,16 +663,16 @@ def PlayerTokenSelect(player):
         else:
             pcble[4].Draw()
             skipturn()
-            if position[player][0] != -1 and position[player][0] != 56:
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
                 pcble[0].Draw()
                 movepion_0()
-            if position[player][1] != -1 and position[player][1] != 56:
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
                 pcble[1].Draw()
                 movepion_1()
-            if position[player][2] != -1 and position[player][2] != 56:
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
                 pcble[2].Draw()
                 movepion_2()
-            if position[player][3] != -1 and position[player][3] != 56:
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
                 pcble[3].Draw()
                 movepion_3()
         pcd(player)
@@ -688,16 +688,16 @@ def PlayerTokenSelect(player):
         else:
             pcrd[4].Draw()
             skipturn()
-            if position[player][0] != -1 and position[player][0] != 56:
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
                 pcrd[0].Draw()
                 movepion_0()
-            if position[player][1] != -1 and position[player][1] != 56:
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
                 pcrd[1].Draw()
                 movepion_1()
-            if position[player][2] != -1 and position[player][2] != 56:
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
                 pcrd[2].Draw()
                 movepion_2()
-            if position[player][3] != -1 and position[player][3] != 56:
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
                 pcrd[3].Draw()
                 movepion_3()
         pcd(player)
@@ -1123,6 +1123,8 @@ random_tips = [
     "Jangan Lupa Berdoa!",
     "Jangan Lupa Bersyukur!",
     "Minimal Maksimal",
+    "Kaisar Bapak Ramah Sekali",
+    "Wong Saya Suka Kok??",
 ]
 
 # show showwin screen
