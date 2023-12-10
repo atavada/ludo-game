@@ -240,9 +240,9 @@ def exit():
 
 def back_function():
     global sts
-    sts = 0
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
-    screen = pygame.Surface((info.current_w, info.current_h))
+    pygame.Surface((info.current_w, info.current_h))
+    sts = 0
 
 
 def rules_function():
