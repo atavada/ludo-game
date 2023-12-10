@@ -13,18 +13,17 @@ import pygame.sysfont
 import os
 import textwrap
 from dice import start, CleanupGL
-import asyncio
-
 
 # main screen
 pygame.init()
 pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
 pygame.display.init()
 info = pygame.display.Info()
-bgimage = pygame.image.load("resources/bg.jpg")
+bgimage = pygame.image.load("resources/images/bg.jpg")
 screen = pygame.Surface((info.current_w, info.current_h))
 pygame.display.set_caption("LUDOang")
-# center the screen
+icon = pygame.image.load("resources/icon/icon.png")
+pygame.display.set_icon(icon)
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 
 # button colors
@@ -92,7 +91,6 @@ pcrd = [
     buttons.Buttons(600, 110, 100, 50, screen, ared, pred, "Pion 2", 14, function=None),
     buttons.Buttons(600, 170, 100, 50, screen, ared, pred, "Pion 3", 14, function=None),
     buttons.Buttons(600, 230, 100, 50, screen, ared, pred, "Pion 4", 14, function=None),
-    # skip button
     buttons.Buttons(600, 290, 100, 50, screen, ared, pred, "Skip", 14, function=None),
 ]
 
@@ -109,7 +107,6 @@ pcgrn = [
     buttons.Buttons(
         600, 230, 100, 50, screen, agreen, pgreen, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(
         600, 290, 100, 50, screen, agreen, pgreen, "Skip", 14, function=None
     ),
@@ -128,7 +125,6 @@ pcylw = [
     buttons.Buttons(
         600, 230, 100, 50, screen, ayellow, pyellow, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(
         600, 290, 100, 50, screen, ayellow, pyellow, "Skip", 14, function=None
     ),
@@ -147,17 +143,16 @@ pcble = [
     buttons.Buttons(
         600, 230, 100, 50, screen, ablue, pblue, "Pion 4", 14, function=None
     ),
-    #  skip button
     buttons.Buttons(600, 290, 100, 50, screen, ablue, pblue, "Skip", 14, function=None),
 ]
 
 diceimg = {
-    1: pygame.image.load("resources\dice1.png"),
-    2: pygame.image.load("resources\dice2.png"),
-    3: pygame.image.load("resources\dice3.png"),
-    4: pygame.image.load("resources\dice4.png"),
-    5: pygame.image.load("resources\dice5.png"),
-    6: pygame.image.load("resources\dice6.png"),
+    1: pygame.image.load("resources/images/dice/dice1.png"),
+    2: pygame.image.load("resources/images/dice/dice2.png"),
+    3: pygame.image.load("resources/images/dice/dice3.png"),
+    4: pygame.image.load("resources/images/dice/dice4.png"),
+    5: pygame.image.load("resources/images/dice/dice5.png"),
+    6: pygame.image.load("resources/images/dice/dice6.png"),
 }
 
 # pion initiation
@@ -188,10 +183,17 @@ Player = {
     ),
 }
 
+
 # start game parameters
 sts = -1
 draw = 0
 turn = 0
+###
+# each player 4 token state
+# -1 = not in game
+# 0-56 = position in game
+# 57 = win
+# 58 = home
 position = {
     0: [-1, -1, -1, -1],
     1: [-1, -1, -1, -1],
@@ -209,15 +211,7 @@ tokenclick = True
 diceclick = False
 
 
-###
-# each player 4 token state
-# -1 = not in game
-# 0-56 = position in game
-# 57 = win
-# 58 = home
 ###button function##
-
-
 def newgame():
     global sts
     sts = 1
@@ -231,7 +225,7 @@ def newgame():
     pygame.mixer.music.load(random.choice(music_list))
     # decrase volume
     pygame.mixer.music.set_volume(0.6)
-    pygame.mixer.music.play()
+    pygame.mixer.music.play(-1)
 
 
 def exit():
@@ -241,14 +235,13 @@ def exit():
 
 def back_function():
     global sts
-    sts = 0
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
-    # refresh screen
-    screen = pygame.Surface((info.current_w, info.current_h))
+    pygame.Surface((info.current_w, info.current_h))
+    sts = 0
 
 
 def rules_function():
-    r_screen = pygame.display.set_mode((800, 600))
+    r_screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
     r_screen.fill((255, 255, 255))
     title_font = pygame.font.Font("freesansbold.ttf", 32)
     title_text = title_font.render("Peraturan Permainan Ludo", True, [0, 0, 0])
@@ -351,7 +344,7 @@ def rules_function():
 
 
 def about_function():
-    about_screen = pygame.display.set_mode((800, 600))
+    about_screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
     pygame.display.set_caption("LUDO GAME")
 
     title_font = pygame.font.Font("freesansbold.ttf", 32)
@@ -362,19 +355,19 @@ def about_function():
         {
             "nama": "Alvalen Shafelbilyunazra",
             "nim": "220535608548",
-            "photo": "Foto_Almet_Alvalen.png",
+            "photo": "Alvalen.png",
             "offering": "TI - A",
         },
         {
             "nama": "Ardha A. P. Agustavada",
             "nim": "220535608503",
-            "photo": "Foto_Almet_Ardha.png",
+            "photo": "Ardha.png",
             "offering": "TI - A",
         },
         {
             "nama": "Azarya A. K. Moeljono",
             "nim": "220535608951",
-            "photo": "Azarya_Foto_Almet.png",
+            "photo": "Azarya.png",
             "offering": "TI - A",
         },
         # Tambahkan profil pengembang lainnya sesuai kebutuhan
@@ -436,7 +429,7 @@ def about_function():
 
         # Draw the developer profiles with scrolling
         for profile in developer_profiles:
-            photo_path = os.path.join("resources", profile["photo"])
+            photo_path = os.path.join("resources/images/profile", profile["photo"])
             developer_image = pygame.image.load(photo_path)
             developer_image = pygame.transform.scale(developer_image, (85, 85))
             about_screen.blit(developer_image, (100, y_position + scroll_y))
@@ -595,46 +588,108 @@ def pcd(player):
 
 
 def PlayerTokenSelect(player):
-    global draw, firstdraw, playerturn
+    global playerturn, diceclick, tokenclick, position, draw
+    if playerturn == 4:
+        playerturn = 0
     if player == 0:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcgrn[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcgrn[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcgrn[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
-                if i < 4:
-                    if position[player][i] != -1:
-                        pcgrn[i].Draw()
+            pcgrn[4].Draw()
+            skipturn()
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
+                pcgrn[0].Draw()
+                movepion_0()
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
+                pcgrn[1].Draw()
+                movepion_1()
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
+                pcgrn[2].Draw()
+                movepion_2()
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
+                pcgrn[3].Draw()
+                movepion_3()
         pcd(player)
     if player == 1:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcylw[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcylw[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcylw[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
-                if i < 4:
-                    if position[player][i] != -1:
-                        pcylw[i].Draw()
+            pcylw[4].Draw()
+            skipturn()
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
+                pcylw[0].Draw()
+                movepion_0()
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
+                pcylw[1].Draw()
+                movepion_1()
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
+                pcylw[2].Draw()
+                movepion_2()
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
+                pcylw[3].Draw()
+                movepion_3()
         pcd(player)
     if player == 2:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcble[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcble[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcble[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
-                if i < 4:
-                    if position[player][i] != -1:
-                        pcble[i].Draw()
+            pcble[4].Draw()
+            skipturn()
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
+                pcble[0].Draw()
+                movepion_0()
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
+                pcble[1].Draw()
+                movepion_1()
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
+                pcble[2].Draw()
+                movepion_2()
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
+                pcble[3].Draw()
+                movepion_3()
         pcd(player)
     if player == 3:
-        if draw == 6 or firstdraw[player] == True:
-            for i in range(5):
-                pcrd[i].Draw()
+        if firstdraw[player] == True and draw != 6:
+            pcrd[4].Draw()
+            skipturn()
+        elif draw == 6 or firstdraw[player] == True:
+            for i in range(4):
+                if position[player][i] != 56:
+                    pcrd[i].Draw()
+            playerchoice()
         else:
-            for i in range(5):
-                if i < 4:
-                    if position[player][i] != -1:
-                        pcrd[i].Draw()
+            pcrd[4].Draw()
+            skipturn()
+            if position[player][0] != -1 and position[player][0] != 56 and position[player][0] + draw <= 56:
+                pcrd[0].Draw()
+                movepion_0()
+            if position[player][1] != -1 and position[player][1] != 56 and position[player][0] + draw <= 56:
+                pcrd[1].Draw()
+                movepion_1()
+            if position[player][2] != -1 and position[player][2] != 56 and position[player][0] + draw <= 56:
+                pcrd[2].Draw()
+                movepion_2()
+            if position[player][3] != -1 and position[player][3] != 56 and position[player][0] + draw <= 56:
+                pcrd[3].Draw()
+                movepion_3()
         pcd(player)
 
 
@@ -708,7 +763,7 @@ def randomZone(pt, token):
             or position[pt][token] == 44
         ):
             # set the token to random zone
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 1 and position[pt][token] != -1:
         if (
@@ -717,7 +772,7 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 2 and position[pt][token] != -1:
         if (
@@ -726,7 +781,7 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 3 and position[pt][token] != -1:
         if (
@@ -735,7 +790,123 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
+
+
+def skipturn():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
+            if pygame.mouse.get_pressed()[0] == 1:
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+
+def movepion_0():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 100 >= pos()[1] >= 50:
+            if pygame.mouse.get_pressed()[0] == 1:
+                if firstdraw[playerturn] == True:
+                    if draw == 6:
+                        position[playerturn][0] += 1
+                        firstdraw[playerturn] = False
+
+                elif (
+                    position[playerturn][0] + draw < 57
+                    and position[playerturn][0] != -1
+                ):
+                    position[playerturn][0] += draw
+
+                elif position[playerturn][0] == -1 and draw == 6:
+                    position[playerturn][0] += 1
+
+                randomZone(playerturn, 0)
+                CollisionChecker(playerturn, 0)
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+                    
+def movepion_1():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 170 >= pos()[1] >= 110:
+            if pygame.mouse.get_pressed()[0] == 1:
+                if firstdraw[playerturn] == True:
+                    if draw == 6:
+                        position[playerturn][1] += 1
+                        firstdraw[playerturn] = False
+                elif (
+                    position[playerturn][1] + draw < 57
+                    and position[playerturn][1] != -1
+                ):
+                    position[playerturn][1] += draw
+                elif position[playerturn][1] == -1 and draw == 6:
+                    position[playerturn][1] += 1
+                randomZone(playerturn, 1)
+                CollisionChecker(playerturn, 1)
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+                    
+def movepion_2():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 230 >= pos()[1] >= 170:
+            if pygame.mouse.get_pressed()[0] == 1:
+                if firstdraw[playerturn] == True:
+                    if draw == 6:
+                        position[playerturn][2] += 1
+                        firstdraw[playerturn] = False
+                elif (
+                    position[playerturn][2] + draw < 57
+                    and position[playerturn][2] != -1
+                ):
+                    position[playerturn][2] += draw
+                elif position[playerturn][2] == -1 and draw == 6:
+                    position[playerturn][2] += 1
+                randomZone(playerturn, 2)
+                CollisionChecker(playerturn, 2)
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
+                    
+def movepion_3():
+    global playerturn, diceclick, tokenclick, position, draw
+    if diceclick == True:
+        if playerturn == 4:
+            playerturn = 0
+        if 700 >= pos()[0] >= 600 and 290 >= pos()[1] >= 230:
+            if pygame.mouse.get_pressed()[0] == 1:
+                if firstdraw[playerturn] == True:
+                    if draw == 6:
+                        position[playerturn][3] += 1
+                        firstdraw[playerturn] = False
+                elif (
+                    position[playerturn][3] + draw < 57
+                    and position[playerturn][3] != -1
+                ):
+                    position[playerturn][3] += draw
+                elif position[playerturn][3] == -1 and draw == 6:
+                    position[playerturn][3] += 1
+                randomZone(playerturn, 3)
+                CollisionChecker(playerturn, 3)
+                diceclick = False
+                tokenclick = True
+                if draw != 6:
+                    playerturn += 1
 
 
 def playerchoice():
@@ -826,13 +997,6 @@ def playerchoice():
                 tokenclick = True
                 if draw != 6:
                     playerturn += 1
-        # skip button to skip turn
-        elif 700 >= pos()[0] >= 600 and 350 >= pos()[1] >= 290:
-            if pygame.mouse.get_pressed()[0] == 1:
-                diceclick = False
-                tokenclick = True
-                if draw != 6:
-                    playerturn += 1
 
 
 def win():
@@ -911,8 +1075,20 @@ def showwin(ply):
     quitbtn1.Draw()
 
 
-def splashscreen(screen):
-    global sts
+def loading_screen():
+    global diceimg, sts
+    screen = pygame.display.set_mode((800, 600), DOUBLEBUF)
+    screen.fill((255, 255, 255))
+    frames = [diceimg[1], diceimg[2], diceimg[3], diceimg[4], diceimg[5], diceimg[6]]
+    for frame in frames:
+        window_width, window_height = pygame.display.get_surface().get_size()
+        frame_width, frame_height = frame.get_size()
+        center_x = (window_width - frame_width) // 2
+        center_y = (window_height - frame_height) // 2
+        screen.blit(frame, (center_x, center_y))
+        pygame.display.flip()
+        pygame.time.wait(500)
+    pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
 
 
 soundtracklist = [
@@ -936,10 +1112,12 @@ random_tips = [
     "Jangan Lupa Sholat!",
     "Jangan Lupa Berdoa!",
     "Jangan Lupa Bersyukur!",
-    
     "Minimal Maksimal",
+    "Kaisar Bapak Ramah Sekali",
+    "Wong Saya Suka Kok??",
 ]
 
+# show showwin screen
 tips = random.choice(random_tips)
 while not done:
     for event in pygame.event.get():
@@ -947,11 +1125,14 @@ while not done:
             done = True
         # if mouse click up
         if event.type == pygame.MOUSEBUTTONUP and sts == -1 and loading > 1:
+            # play click sound
+            click_sound = pygame.mixer.Sound("resources/audio/btn.mp3")
+            click_sound.play()
+            loading_screen()
             sts = 0
 
     if sts == -1:
-        splash = pygame.image.load("resources/bg.jpg")
-        screen.blit(splash, (0, 0))
+        screen.blit(bgimage, (0, 0))
         if loading > 1:
             # Add message "Tap to continue" with outline
             fontobj = pygame.font.Font("freesansbold.ttf", 18)
@@ -1035,7 +1216,7 @@ while not done:
                 screen.blit(diceimg[draw], (275, 0))
                 UpBoard()
                 PlayerTokenSelect(playerturn)
-                playerchoice()
+                # playerchoice()
             elif win() == True:
                 showwin(playerturn)
 

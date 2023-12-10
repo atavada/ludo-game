@@ -3,8 +3,6 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image  # Updated import for Python 3
-import sys
-import random as r
 import time
 import numpy as np
 
@@ -98,10 +96,6 @@ def LoadTextures():
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
 
         textures.append(texture)
-
-
-# load textures from the saved images in the array
-
 
 # called immediately after creating the window
 def InitGL(width, height):
