@@ -257,36 +257,17 @@ def rules_function():
     rule_text = [
         "Peraturan Permainan LUDOang",
         "",
-        "Persiapan Permainan:",
-        "- Papan permainan Ludo memiliki jalur yang terbagi menjadi empat warna: merah, kuning, hijau, dan biru.",
-        "- Setiap pemain memiliki empat buah pion dalam warna yang sesuai.",
-        "- Pions ditempatkan di rumah masing-masing pemain di ujung jalur.",
+        "- Terdapat 4 pemain berwarna merah, kuning, hijau, dan biru yang masing masing memiliki 4 pion, dengan tujuan memindahkan semua pion ke area finish.",
         "",
-        "Tujuan Permainan:",
-        "- Pemain pertama yang berhasil membawa keempat pionnya ke pusat papan permainan adalah pemenangnya.",
+        "- Pemain harus melemparkan dadu hingga menunjukkan angka 6 untuk dapat mengeluarkan pion dari area start.",
         "",
-        "Aturan Pergeseran Pion:",
-        "- Pion dapat bergerak sejauh jumlah mata dadu yang dilempar.",
-        "- Jika dadu menunjukkan enam, pemain dapat melempar lagi dan bergerak pion baru atau memindahkan pion yang sudah bergerak.",
-        "- Pion hanya dapat diakses oleh pemain yang memiliki warna yang sesuai dengan warna jalur yang diikuti.",
+        "- Pion yang telah keluar dari area start dan berada pada jalur permainan, akan berjalan sesuai dengan angka yang ditunjukkan oleh dadu.",
         "",
-        "Aturan Keamanan (Safe Zone):",
-        "- Kotak yang ditempati oleh pion sendiri adalah zona aman. Pion di zona aman tidak dapat dihentikan oleh pemain lain.",
-        "- Pemain lain tidak dapat melewati zona aman pemain lainnya.",
+        "- Ketika dadu menunjukkan angka 6, pemain dapat melemparkan dadu sekali lagi dan memilih untuk mengeluarkan pion dari area start atau menjalankan pion yang berada di jalur permainan..",
         "",
-        "Aturan Memakan Pion Pemain Lain:",
-        "- Jika pion mendarat di kotak yang sudah ditempati oleh pion pemain lain, pion pemain lain tersebut dipindahkan kembali ke rumahnya.",
+        "- Ketika pion dengan warna berbeda menempati satu petak jalur yang sama, maka pion pertama yang berada di petak jalur tersebut akan kembali ke area start.",
         "",
-        "Aturan Masuk ke Pusat:",
-        "- Untuk memasukkan pion ke pusat papan, pemain harus melempar dadu dan mendapatkan jumlah mata yang sesuai dengan jarak yang tersisa menuju pusat.",
-        "- Pemain harus melempar jumlah mata yang pas untuk menyelesaikan perjalanan ke pusat.",
-        "",
-        "Aturan Dadu:",
-        "- Dadu dilempar dengan menekan tombol 'Throw Dice'.",
-        "- Jika dadu jatuh di luar papan atau tidak jelas, pemain harus melempar ulang.",
-        "",
-        "Pemenang:",
-        "- Pemain yang pertama kali membawa keempat pionnya ke pusat papan adalah pemenangnya.",
+        "- Ketika pion berada dalam petak safe zone, maka pion akan aman dari pion pemain lain. Ketika pion berada dalam petak random zone, maka pion akan dipindahkan secara acak ke petak tertentu.",
     ]
 
     fontobj = pygame.font.Font("freesansbold.ttf", 20)
@@ -310,6 +291,8 @@ def rules_function():
         back_function,
     )
 
+
+
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -332,6 +315,15 @@ def rules_function():
         # Draw the title "Peraturan Permainan Ludo" with scrolling
         r_screen.fill((255, 255, 255))
 
+        rules = "resources/rules.png"
+        # render the rules image in the top of screen
+        rules_image = pygame.image.load(rules)
+        rules_image = pygame.transform.scale(rules_image, (800, 200))
+        # add y value to scroll
+        rules_rect = rules_image.get_rect(topleft=(0, 0 - scroll_y))
+        r_screen.blit(rules_image, rules_rect)
+        
+
         for line in rule_text:
             words = line.split(" ")
             lines = [""]
@@ -351,7 +343,7 @@ def rules_function():
                 y_position += line_height
 
         # Adjust y_position based on scrolling
-        y_position = 50 - scroll_y
+        y_position = 275 - scroll_y
 
         back_btn_rules.Draw()
 
