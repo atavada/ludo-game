@@ -3,8 +3,6 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from PIL import Image  # Updated import for Python 3
-import sys
-import random as r
 import time
 import numpy as np
 

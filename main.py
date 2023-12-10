@@ -13,8 +13,6 @@ import pygame.sysfont
 import os
 import textwrap
 from dice import start, CleanupGL
-import asyncio
-
 
 # main screen
 pygame.init()
