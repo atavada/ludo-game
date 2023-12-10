@@ -717,7 +717,7 @@ def randomZone(pt, token):
             or position[pt][token] == 44
         ):
             # set the token to random zone
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 1 and position[pt][token] != -1:
         if (
@@ -726,7 +726,7 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 2 and position[pt][token] != -1:
         if (
@@ -735,7 +735,7 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
     elif pt == 3 and position[pt][token] != -1:
         if (
@@ -744,7 +744,7 @@ def randomZone(pt, token):
             or position[pt][token] == 31
             or position[pt][token] == 44
         ):
-            position[pt][token] = random.randint(0, 56)
+            position[pt][token] = random.randint(-1, 56)
 
 
 def playerchoice():
@@ -945,7 +945,6 @@ random_tips = [
     "Jangan Lupa Sholat!",
     "Jangan Lupa Berdoa!",
     "Jangan Lupa Bersyukur!",
-    
     "Minimal Maksimal",
 ]
 
@@ -960,7 +959,6 @@ while not done:
             # play click sound
             click_sound = pygame.mixer.Sound("resources/audio/btn.mp3")
             click_sound.play()
-            
 
     if sts == -1:
         splash = pygame.image.load("resources/bg.jpg")
