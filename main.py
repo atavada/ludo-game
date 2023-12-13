@@ -236,7 +236,7 @@ def exit():
 def back_function():
     global sts
     pygame.display.set_mode((800, 600), OPENGL | DOUBLEBUF)
-    pygame.Surface((info.current_w, info.current_h))
+    pygame.display.init()
     sts = 0
 
 

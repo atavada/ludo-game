@@ -157,7 +157,7 @@ def ReSizeGLScene(width, height):
         height = 1
 
     glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
+    glMatrixMode(GL_PROJECTION) 
     glLoadIdentity()
     gluPerspective(45.0, float(width) / float(height), 0.1, 100.0)
     glMatrixMode(GL_MODELVIEW)
